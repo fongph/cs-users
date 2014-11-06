@@ -71,15 +71,15 @@ class Manager
         $escapedEmail = $this->db->quote($email);
 
         return $this->db->query("SELECT
-                                            `login`,
-                                            `password`,
-                                            `email_confirmed`,
-                                            `active`
-                                        FROM `users`
-                                        WHERE 
-                                            `site_id` = {$escapedSite} AND
-                                            `login` = {$escapedEmail}
-                                        LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+                                        `login`,
+                                        `password`,
+                                        `email_confirmed`,
+                                        `active`
+                                    FROM `users`
+                                    WHERE 
+                                        `site_id` = {$escapedSite} AND
+                                        `login` = {$escapedEmail}
+                                    LIMIT 1")->fetch(PDO::FETCH_ASSOC);
     }
 
     public function loginById($siteId, $id)
@@ -87,14 +87,20 @@ class Manager
         $escapedSite = $this->db->quote($siteId);
         $userId = $this->db->quote($id);
 
-        return $this->db->query("SELECT
-                                            `login`,
-                                            `email_confirmed`
-                                        FROM `users`
-                                        WHERE 
-                                            `site_id` = {$escapedSite} AND
-                                            `id` = {$userId}
-                                        LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+        $data = $this->db->query("SELECT
+                                        `login`,
+                                        `email_confirmed`
+                                    FROM `users`
+                                    WHERE 
+                                        `site_id` = {$escapedSite} AND
+                                        `id` = {$userId}
+                                    LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+                                        
+        if ($data == false) {
+            throw new UserNotFoundException("User not found!");
+        }
+        
+        return $data;
     }
 
     /**
