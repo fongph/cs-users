@@ -23,7 +23,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "boomers/ip": "~1.0",
+        "boomers/ip": "dev-master",
         "boomers/cs-models": "dev-master",
         "boomers/cs-mail": "dev-master",
         "boomers/cs-settings": "dev-master"
