@@ -75,7 +75,7 @@ class UsersManager
         if (strlen($password) < 6) {
             throw new PasswordTooShortException("User password is too short!");
         }
-        
+
         $data = $this->getUserData($siteId, $email);
 
         if ($data == false) {
@@ -126,8 +126,13 @@ class UsersManager
         return true;
     }
 
-    //@TODO: add transactions support
-    public function resetPassword($email, $newPassword, $newPasswordConfirm)
+    private function getUserPasswordHash($id)
+    {
+        $escapedId = $this->getDb()->quote($id);
+        return $this->getDb()->query("SELECT `password` FROM `users` WHERE `id` = {$escapedId} LIMIT 1")->fetchColumn();
+    }
+
+    public function updatePassword($id, $oldPassword, $newPassword, $newPasswordConfirm)
     {
         if ($newPassword !== $newPasswordConfirm) {
             throw new PasswordsNotEqualException("Users passwords are not equal!");
@@ -137,10 +142,35 @@ class UsersManager
             throw new PasswordTooShortException("User password is too short!");
         }
 
-        $password = $this->getDb()->quote($this->getHash($newPassword));
-        $emailValue = $this->getDb()->quote($email);
-        $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `login` = {$emailValue}");
+        $hash = $this->getUserPasswordHash($id);
         
+        if ($this->verifyPassword($hash, $oldPassword)) {
+            throw new InvalidPasswordException("Invalid password!");
+        }
+        
+        $userId = $this->getDb()->quote($id);
+        $password = $this->getDb()->quote($this->getPasswordHash($newPassword));
+        $this->getDb()->exec("UPDATE `users` SET `password` = {$password}, `updated_at` = NOW() WHERE `id` = {$userId}");
+        
+        return true;
+    }
+
+    //@TODO: add transactions support
+    public function resetPassword($siteId, $email, $newPassword, $newPasswordConfirm)
+    {
+        if ($newPassword !== $newPasswordConfirm) {
+            throw new PasswordsNotEqualException("Users passwords are not equal!");
+        }
+
+        if (strlen($newPassword) < 6) {
+            throw new PasswordTooShortException("User password is too short!");
+        }
+
+        $password = $this->getDb()->quote($this->getPasswordHash($newPassword));
+        $emailValue = $this->getDb()->quote($email);
+        $siteValue = $this->getDb()->quote($siteId);
+        $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `site_id` = {$siteValue} AND `login` = {$emailValue}");
+
         return true;
     }
 
@@ -305,7 +335,7 @@ class UsersManager
 
         $confirmEmailUrl = GlobalSettings::getEmailConfirmPageUrl($siteId, $email, $emailConfirmHash);
         $this->getSender()->sendRegistrationSuccessWithPassword($email, $password, $confirmEmailUrl);
-        
+
         return true;
     }
 
