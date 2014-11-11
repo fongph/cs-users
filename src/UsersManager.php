@@ -231,7 +231,7 @@ class UsersManager
                                         `login`,
                                         `locale`,
                                         `records_per_page`,
-                                        `email_confirmed`,
+                                        `email_confirmed`
                                     FROM `users`
                                     WHERE 
                                         `id` = {$userId}
