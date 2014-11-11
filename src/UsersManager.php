@@ -5,7 +5,7 @@ namespace CS\Users;
 use PDO,
     IP,
     CS\Settings\GlobalSettings,
-    CS\Mail\Sender,
+    CS\Mail\MailSender,
     CS\Models\User\UserRecord,
     CS\Models\User\AuthLog\UserAuthLogRecord;
 
@@ -26,7 +26,7 @@ class UsersManager
 
     /**
      *
-     * @var Sender 
+     * @var MailSender 
      */
     protected $sender;
     protected $loginAttempts = 5;
@@ -46,7 +46,7 @@ class UsersManager
         return $this->db;
     }
 
-    public function setSender(Sender $sender)
+    public function setSender(MailSender $sender)
     {
         $this->sender = $sender;
     }
