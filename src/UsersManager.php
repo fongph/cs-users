@@ -148,7 +148,7 @@ class UsersManager
     {
         $userId = intval($id);
 
-        return $this->getDb()->query("SELECT COUNT(*) FROM `users_auth_attempts` WHERE `user_id` = {$userId} AND NOW() - `created_at` < {$this->loginAttemptsPeriod}")->fetchColumn(PDO::FETCH_ASSOC);
+        return $this->getDb()->query("SELECT COUNT(*) FROM `users_auth_attempts` WHERE `user_id` = {$userId} AND NOW() - `created_at` < {$this->loginAttemptsPeriod}")->fetchColumn();
     }
 
     private function addLoginAttempt($id)
