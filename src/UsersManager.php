@@ -86,7 +86,7 @@ class UsersManager
             throw new UserLockedException("User account is locked out!");
         }
 
-        if (!verifyPassword($data['password'], $password)) {
+        if (!$this->verifyPassword($data['password'], $password)) {
             $this->incFailAttempts($siteId, $data);
             throw new InvalidPasswordException("Invalid password!");
         }
