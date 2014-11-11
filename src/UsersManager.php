@@ -211,6 +211,8 @@ class UsersManager
                                         `id`,
                                         `login`,
                                         `password`,
+                                        `locale`,
+                                        `records_per_page`,
                                         `email_confirmed`,
                                         `locked`
                                     FROM `users`
@@ -225,8 +227,11 @@ class UsersManager
         $userId = $this->db->quote($id);
 
         $data = $this->db->query("SELECT
+                                        `id`,
                                         `login`,
-                                        `email_confirmed`
+                                        `locale`,
+                                        `records_per_page`,
+                                        `email_confirmed`,
                                     FROM `users`
                                     WHERE 
                                         `id` = {$userId}
