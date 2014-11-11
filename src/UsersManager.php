@@ -144,7 +144,7 @@ class UsersManager
 
         $hash = $this->getUserPasswordHash($id);
         
-        if ($this->verifyPassword($hash, $oldPassword)) {
+        if (!$this->verifyPassword($hash, $oldPassword)) {
             throw new InvalidPasswordException("Invalid password!");
         }
         
