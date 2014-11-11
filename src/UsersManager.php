@@ -264,11 +264,11 @@ class UsersManager
         }
 
         if (isset($info->ismobiledevice)) {
-            $userAuthLog->setMobile($info->ismobiledevice);
+            $userAuthLog->setMobile($info->ismobiledevice > 0);
         }
 
         if (isset($info->istablet)) {
-            $userAuthLog->setTablet($info->istablet);
+            $userAuthLog->setTablet($info->istablet > 0);
         }
 
         $userAuthLog->save();
