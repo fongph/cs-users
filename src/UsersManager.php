@@ -165,7 +165,7 @@ class UsersManager
 
     private function incFailAttempts($siteId, $data)
     {
-        if ($this->getLoginAttemptsCount($data['id']) >= self::$loginAttempts - 1) {
+        if ($this->getLoginAttemptsCount($data['id']) >= $this->loginAttempts - 1) {
             $this->lockWithHash($siteId, $data['id'], $data['login']);
             throw new UserLockedException("User account is locked out!");
         }
