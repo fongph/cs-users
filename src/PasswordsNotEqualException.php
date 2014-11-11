@@ -7,7 +7,7 @@ namespace CS\Users;
  *
  * @author root
  */
-class PasswordsNotEqualException
+class PasswordsNotEqualException extends \Exception
 {
     //put your code here
 }

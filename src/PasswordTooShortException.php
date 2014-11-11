@@ -7,7 +7,7 @@ namespace CS\Users;
  *
  * @author root
  */
-class PasswordTooShortException
+class PasswordTooShortException extends \Exception
 {
     //put your code here
 }
