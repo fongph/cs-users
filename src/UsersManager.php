@@ -155,7 +155,7 @@ class UsersManager
         return true;
     }
 
-    public function canRestorePassword($siteId, $email, $secret)
+    public function canResetPassword($siteId, $email, $secret)
     {
         $site = $this->getDb()->quote($siteId);
         $emailValue = $this->getDb()->quote($email);
