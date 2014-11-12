@@ -53,7 +53,7 @@ class UsersManager
 
     public function getSender()
     {
-        if (!($this->sender instanceof Sender)) {
+        if (!($this->sender instanceof MailSender)) {
             throw new InvalidSenderObjectException("Invalid mail sender object!");
         }
 
