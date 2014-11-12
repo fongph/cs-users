@@ -189,6 +189,14 @@ class UsersManager
 
         return $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `site_id` = {$siteValue} AND `login` = {$emailValue} AND `restore_hash` = {$secretValue}") > 0;
     }
+    
+    public function unlockAccount($siteId, $email, $secret)
+    {
+        $site = $this->getDb()->quote($siteId);
+        $emailValue = $this->getDb()->quote($email);
+        $secretValue = $this->getDb()->quote($secret);
+        return $this->getDb()->exec("UPDATE `users` SET `locked` = 0, `unlock_hash` = '', `updated_at` = NOW() WHERE `site_id` = {$site} AND `login` = {$emailValue} AND `unlock_hash` = {$secretValue} LIMIT 1") > 0;
+    }
 
     private function getLoginAttemptsCount($id)
     {
