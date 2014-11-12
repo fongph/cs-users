@@ -172,7 +172,7 @@ class UsersManager
     }
     
     //@TODO: add transactions support
-    public function resetPassword($siteId, $email, $newPassword, $newPasswordConfirm)
+    public function resetPassword($siteId, $email, $secret, $newPassword, $newPasswordConfirm)
     {
         if ($newPassword !== $newPasswordConfirm) {
             throw new PasswordsNotEqualException("Users passwords are not equal!");
@@ -185,9 +185,9 @@ class UsersManager
         $password = $this->getDb()->quote($this->getPasswordHash($newPassword));
         $emailValue = $this->getDb()->quote($email);
         $siteValue = $this->getDb()->quote($siteId);
-        $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `site_id` = {$siteValue} AND `login` = {$emailValue}");
+        $secretValue = $this->getDb()->quote($secret);
 
-        return true;
+        return $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `site_id` = {$siteValue} AND `login` = {$emailValue} AND `restore_hash` = {$secretValue}") > 0;
     }
 
     private function getLoginAttemptsCount($id)
