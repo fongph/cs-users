@@ -160,7 +160,15 @@ class UsersManager
         $site = $this->getDb()->quote($siteId);
         $emailValue = $this->getDb()->quote($email);
         $secretValue = $this->getDb()->quote($secret);
-        return $this->getDb()->query("SELECT COUNT(*) FROM `users` WHERE `site_id` = {$site} AND `login` = {$email} AND `restore_hash` = {$secretValue} LIMIT 1")->fetchColumn() > 0;
+        
+        return $this->getDb()->query("SELECT 
+                                            COUNT(*) 
+                                        FROM `users`
+                                        WHERE 
+                                            `site_id` = {$site} AND 
+                                            `login` = {$emailValue} AND
+                                            `restore_hash` = {$secretValue} 
+                                        LIMIT 1")->fetchColumn() > 0;
     }
     
     //@TODO: add transactions support
