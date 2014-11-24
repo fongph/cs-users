@@ -121,7 +121,7 @@ class UsersManager
 
 
         $restorePasswordUrl = GlobalSettings::getRestorePasswordPageUrl($siteId, $email, $secret);
-        $this->getSender()->sendLostPasswordEmail($email, $restorePasswordUrl);
+        $this->getSender()->sendLostPassword($email, $restorePasswordUrl);
 
         return true;
     }
@@ -306,11 +306,13 @@ class UsersManager
 
         $ip = IP::getRealIP();
 
+        $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+        
         $userAuthLog->setUserId(intval($id))
                 ->setIp($ip)
                 ->setCountry(IP::getCountry($ip))
                 ->setFullInfo(json_encode($info))
-                ->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+                ->setUserAgent($userAgent);
 
         if (isset($info->browser, $info->version)) {
             $userAuthLog->setBrowser($info->browser)
