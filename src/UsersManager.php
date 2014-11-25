@@ -72,9 +72,9 @@ class UsersManager
 
     public function login($siteId, $email, $password)
     {
-        if (strlen($password) < 6) {
-            //throw new PasswordTooShortException("User password is too short!");
-        }
+//        if (strlen($password) < 6) {
+//            throw new PasswordTooShortException("User password is too short!");
+//        }
 
         $data = $this->getUserData($siteId, $email);
 
