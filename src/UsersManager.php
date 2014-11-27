@@ -354,7 +354,7 @@ class UsersManager
         $userRecord = new UserRecord($this->db);
         $userRecord->setSiteId($siteId)
                 ->setLogin($email)
-                ->setPassword($password)
+                ->setPassword($this->getPasswordHash($password))
                 ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
 
@@ -362,7 +362,7 @@ class UsersManager
         $confirmEmailUrl = GlobalSettings::getEmailConfirmPageUrl($siteId, $email, $emailConfirmHash);
         $this->getSender()->sendRegistrationSuccessWithPassword($email, $password, $confirmEmailUrl);
 
-        return true;
+        return $userRecord->getId();
     }
 
     /**
