@@ -1,0 +1,35 @@
+<?php
+
+namespace CS\Users;
+
+/**
+ * Description of InvalidPasswordException
+ *
+ * @author root
+ */
+class PassHash
+{
+
+    private static $algo = '$2a';
+    private static $cost = '$10';
+
+    public static function unique_salt()
+    {
+        return substr(sha1(mt_rand()), 0, 22);
+    }
+
+    public static function hash($password)
+    {
+        return crypt($password, self::$algo . self::$cost . '$' . self::unique_salt());
+    }
+
+    public static function check_password($hash, $password)
+    {
+        $fullSalt = substr($hash, 0, 29);
+
+        $newHash = crypt($password, $fullSalt);
+
+        return ($hash == $newHash);
+    }
+
+}

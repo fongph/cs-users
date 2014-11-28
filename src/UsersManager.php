@@ -62,12 +62,13 @@ class UsersManager
 
     public function getPasswordHash($password)
     {
-        return password_hash($password, PASSWORD_BCRYPT);
+        
+        return PassHash::hash($password);
     }
 
     public function verifyPassword($hash, $password)
     {
-        return password_verify($password, $hash);
+        return PassHash::check_password($hash, $password);
     }
 
     public function login($siteId, $email, $password)
