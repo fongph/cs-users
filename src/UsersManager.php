@@ -62,7 +62,7 @@ class UsersManager
 
     public function getPasswordHash($password)
     {
-        
+
         return PassHash::hash($password);
     }
 
@@ -144,15 +144,15 @@ class UsersManager
         }
 
         $hash = $this->getUserPasswordHash($id);
-        
+
         if (!$this->verifyPassword($hash, $oldPassword)) {
             throw new InvalidPasswordException("Invalid password!");
         }
-        
+
         $userId = $this->getDb()->quote($id);
         $password = $this->getDb()->quote($this->getPasswordHash($newPassword));
         $this->getDb()->exec("UPDATE `users` SET `password` = {$password}, `updated_at` = NOW() WHERE `id` = {$userId}");
-        
+
         return true;
     }
 
@@ -161,7 +161,7 @@ class UsersManager
         $site = $this->getDb()->quote($siteId);
         $emailValue = $this->getDb()->quote($email);
         $secretValue = $this->getDb()->quote($secret);
-        
+
         return $this->getDb()->query("SELECT 
                                             COUNT(*) 
                                         FROM `users`
@@ -171,7 +171,7 @@ class UsersManager
                                             `restore_hash` = {$secretValue} 
                                         LIMIT 1")->fetchColumn() > 0;
     }
-    
+
     //@TODO: add transactions support
     public function resetPassword($siteId, $email, $secret, $newPassword, $newPasswordConfirm)
     {
@@ -190,7 +190,7 @@ class UsersManager
 
         return $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `site_id` = {$siteValue} AND `login` = {$emailValue} AND `restore_hash` = {$secretValue}") > 0;
     }
-    
+
     public function unlockAccount($siteId, $email, $secret)
     {
         $site = $this->getDb()->quote($siteId);
@@ -301,7 +301,7 @@ class UsersManager
 
     private function logAuth($id)
     {
-        $info = get_browser();
+        $info = $this->utf8Encode(get_browser());
 
         $userAuthLog = new UserAuthLogRecord($this->db);
 
@@ -334,6 +334,27 @@ class UsersManager
         }
 
         $userAuthLog->save();
+    }
+
+    private function utf8Encode($input)
+    {
+        if (is_string($input)) {
+            $input = utf8_encode($input);
+        } else if (is_array($input)) {
+            foreach ($input as &$value) {
+                utf8_encode_deep($value);
+            }
+
+            unset($value);
+        } else if (is_object($input)) {
+            $vars = array_keys(get_object_vars($input));
+
+            foreach ($vars as $var) {
+                utf8_encode_deep($input->$var);
+            }
+        }
+        
+        return $input;
     }
 
     public function lock($id)
