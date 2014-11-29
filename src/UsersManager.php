@@ -301,7 +301,7 @@ class UsersManager
 
     private function logAuth($id)
     {
-        $info = $this->utf8Encode(get_browser());
+        $info = self::utf8EncodeDeep(get_browser());
 
         $userAuthLog = new UserAuthLogRecord($this->db);
 
@@ -336,13 +336,13 @@ class UsersManager
         $userAuthLog->save();
     }
 
-    private function utf8Encode($input)
+    private static function utf8EncodeDeep($input)
     {
         if (is_string($input)) {
             $input = utf8_encode($input);
         } else if (is_array($input)) {
             foreach ($input as &$value) {
-                utf8_encode_deep($value);
+                self::utf8EncodeDeep($value);
             }
 
             unset($value);
@@ -350,7 +350,7 @@ class UsersManager
             $vars = array_keys(get_object_vars($input));
 
             foreach ($vars as $var) {
-                utf8_encode_deep($input->$var);
+                self::utf8EncodeDeep($input->$var);
             }
         }
         
