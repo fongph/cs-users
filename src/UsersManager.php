@@ -149,11 +149,19 @@ class UsersManager
             throw new InvalidPasswordException("Invalid password!");
         }
 
-        return $this->setUserPassword($id, $newPassword);
+        $userId = $this->getDb()->quote($id);
+        $passwordValue = $this->getDb()->quote($this->getPasswordHash($newPassword));
+        $this->getDb()->exec("UPDATE `users` SET `password` = {$passwordValue}, `updated_at` = NOW() WHERE `id` = {$userId}");
+
+        return true;
     }
 
     public function setUserPassword($id, $password)
     {
+        if (strlen($password) < 6) {
+            throw new PasswordTooShortException("User password is too short!");
+        }
+        
         $userId = $this->getDb()->quote($id);
         $passwordValue = $this->getDb()->quote($this->getPasswordHash($password));
         $this->getDb()->exec("UPDATE `users` SET `password` = {$passwordValue}, `updated_at` = NOW() WHERE `id` = {$userId}");
