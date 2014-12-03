@@ -367,9 +367,7 @@ class UsersManager
                 ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
 
-
-        $confirmEmailUrl = GlobalSettings::getEmailConfirmPageUrl($siteId, $email, $emailConfirmHash);
-        $this->getSender()->sendRegistrationSuccessWithPassword($email, $password, $confirmEmailUrl);
+        $this->getSender()->sendRegistrationSuccessWithPassword($email, $email, $password);
 
         return $userRecord->getId();
     }
