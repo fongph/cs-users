@@ -368,21 +368,19 @@ class UsersManager
         return $userRecord->getId();
     }
 
-    public function buildDirectLoginHash($siteId, $id, $email, $salt)
+    public function buildDirectLoginHash($siteId, $id, $salt)
     {
-        return md5($siteId . $salt . $id . $salt . $email);
+        return md5($siteId . $salt . $id . $salt);
     }
 
-    public function getDirectLoginUserData($siteId, $id, $email, $hash, $salt)
+    public function getDirectLoginUserData($siteId, $id, $hash, $salt)
     {
-        if ($this->buildDirectLoginHash($siteId, $id, $email, $salt) !== $hash) {
+        if ($this->buildDirectLoginHash($siteId, $id, $salt) !== $hash) {
             throw new DirectLoginException("Invalid hash!");
         }
         
-        $data = $this->getUserDataById($siteId, $id);
-        
-        if ($data['email'] !== $email) {
-            throw new DirectLoginException("Passed email not equal to user's email!");
+        if (($data = $this->getUserDataById($siteId, $id)) === false) {
+            throw new DirectLoginException("User not found!");
         }
         
         return $data;
