@@ -342,6 +342,12 @@ class UsersManager
         return $this->db->exec("UPDATE `users` SET `unlock_hash` = '', `locked` = 1, `updated_at` = NOW() WHERE `id` = {$userId}");
     }
 
+    public function unlock($id)
+    {
+        $userId = $this->db->quote($id);
+        return $this->db->exec("UPDATE `users` SET `unlock_hash` = '', `locked` = 0, `updated_at` = NOW() WHERE `id` = {$userId}");
+    }
+
     //@TODO: add transactions support
     public function createUser($siteId, $email)
     {
