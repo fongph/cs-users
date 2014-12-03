@@ -62,7 +62,7 @@ class UsersManager
 
     public function getPasswordHash($password)
     {
-        
+
         return PassHash::hash($password);
     }
 
@@ -144,15 +144,15 @@ class UsersManager
         }
 
         $hash = $this->getUserPasswordHash($id);
-        
+
         if (!$this->verifyPassword($hash, $oldPassword)) {
             throw new InvalidPasswordException("Invalid password!");
         }
-        
+
         $userId = $this->getDb()->quote($id);
         $password = $this->getDb()->quote($this->getPasswordHash($newPassword));
         $this->getDb()->exec("UPDATE `users` SET `password` = {$password}, `updated_at` = NOW() WHERE `id` = {$userId}");
-        
+
         return true;
     }
 
@@ -161,7 +161,7 @@ class UsersManager
         $site = $this->getDb()->quote($siteId);
         $emailValue = $this->getDb()->quote($email);
         $secretValue = $this->getDb()->quote($secret);
-        
+
         return $this->getDb()->query("SELECT 
                                             COUNT(*) 
                                         FROM `users`
@@ -171,7 +171,7 @@ class UsersManager
                                             `restore_hash` = {$secretValue} 
                                         LIMIT 1")->fetchColumn() > 0;
     }
-    
+
     //@TODO: add transactions support
     public function resetPassword($siteId, $email, $secret, $newPassword, $newPasswordConfirm)
     {
@@ -190,7 +190,7 @@ class UsersManager
 
         return $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `site_id` = {$siteValue} AND `login` = {$emailValue} AND `restore_hash` = {$secretValue}") > 0;
     }
-    
+
     public function unlockAccount($siteId, $email, $secret)
     {
         $site = $this->getDb()->quote($siteId);
@@ -277,8 +277,9 @@ class UsersManager
                                     LIMIT 1")->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function loginById($id)
+    public function getUserDataById($siteId, $id)
     {
+        $site = $this->db->quote($siteId);
         $userId = $this->db->quote($id);
 
         $data = $this->db->query("SELECT
@@ -288,7 +289,8 @@ class UsersManager
                                         `records_per_page`,
                                         `email_confirmed`
                                     FROM `users`
-                                    WHERE 
+                                    WHERE
+                                        `site_id` = {$site} AND
                                         `id` = {$userId}
                                     LIMIT 1")->fetch(PDO::FETCH_ASSOC);
 
@@ -308,7 +310,7 @@ class UsersManager
         $ip = IP::getRealIP();
 
         $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-        
+
         $userAuthLog->setUserId(intval($id))
                 ->setIp($ip)
                 ->setCountry(IP::getCountry($ip))
@@ -370,6 +372,26 @@ class UsersManager
         $this->getSender()->sendRegistrationSuccessWithPassword($email, $password, $confirmEmailUrl);
 
         return $userRecord->getId();
+    }
+
+    public function buildDirectLoginHash($siteId, $id, $email, $salt)
+    {
+        return md5($siteId . $salt . $id . $salt . $email);
+    }
+
+    public function getDirectLoginUserData($siteId, $id, $email, $hash, $salt)
+    {
+        if ($this->buildDirectLoginHash($siteId, $id, $email, $salt) !== $hash) {
+            throw new DirectLoginException("Invalid hash!");
+        }
+        
+        $data = $this->getUserDataById($siteId, $id);
+        
+        if ($data['email'] !== $email) {
+            throw new DirectLoginException("Passed email not equal to user's email!");
+        }
+        
+        return $data;
     }
 
     /**
