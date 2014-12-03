@@ -149,9 +149,14 @@ class UsersManager
             throw new InvalidPasswordException("Invalid password!");
         }
 
+        return $this->setUserPassword($id, $newPassword);
+    }
+
+    public function setUserPassword($id, $password)
+    {
         $userId = $this->getDb()->quote($id);
-        $password = $this->getDb()->quote($this->getPasswordHash($newPassword));
-        $this->getDb()->exec("UPDATE `users` SET `password` = {$password}, `updated_at` = NOW() WHERE `id` = {$userId}");
+        $passwordValue = $this->getDb()->quote($this->getPasswordHash($password));
+        $this->getDb()->exec("UPDATE `users` SET `password` = {$passwordValue}, `updated_at` = NOW() WHERE `id` = {$userId}");
 
         return true;
     }
