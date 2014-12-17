@@ -289,6 +289,19 @@ class UsersManager
                                         `login` = {$escapedEmail}
                                     LIMIT 1")->fetch(PDO::FETCH_ASSOC);
     }
+    
+    public function getUserId($siteId, $email) {
+        $escapedSite = $this->db->quote($siteId);
+        $escapedEmail = $this->db->quote($email);
+        
+        return $this->db->query("SELECT
+                                        `id` 
+                                    FROM `users`
+                                    WHERE 
+                                        `site_id` = {$escapedSite} AND
+                                        `login` = {$escapedEmail}
+                                    LIMIT 1")->fetchColumn();
+    }
 
     public function getUserDataById($siteId, $id)
     {
