@@ -49,6 +49,8 @@ class UsersManager
     public function setSender(MailSender $sender)
     {
         $this->sender = $sender;
+        
+        return $this;
     }
 
     public function getSender()
