@@ -364,6 +364,9 @@ class UsersManager
         }
 
         $userAuthLog->save();
+        
+        (new UsersNotes($this->db))
+            ->addSystemNote($id, UsersNotes::TYPE_AUTH, null, $userAuthLog->getId());
     }
 
     public function lock($id)
