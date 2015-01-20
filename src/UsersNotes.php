@@ -57,7 +57,7 @@ class UsersNotes {
         $userId = (int)$userId;
         $records = $this->db->query("
             select SQL_CALC_FOUND_ROWS 
-                l.date date,
+                unix_timestamp(l.date) timestamp,
                 admin.email actor,
                 l.type type,
                 l.content description,
