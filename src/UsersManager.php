@@ -74,21 +74,36 @@ class UsersManager
         return PassHash::check_password($hash, $password);
     }
 
-    public function setUserOption($userId, $option, $value)
+    public function setUserOption($userId, $option, $value, $scope = UserOptionRecord::SCOPE_GLOBAL)
     {
         $escapedUserId = $this->getDb()->quote($userId);
         $escapedOption = $this->getDb()->quote($option);
         $escapedValue = $this->getDb()->quote($value);
+        $escapedScope = $this->getDb()->quote($scope);
         
         $this->getDb()->exec("INSERT INTO `users_option` SET 
                     `option` = {$escapedOption},
                     `value` = {$escapedValue}
+                    `scope` = {$escapedScope}
                 WHERE 
                     `user_id` = {$escapedUserId}
                 ON DUPLICATE KEY UPDATE
-                    `value` = {$escapedValue}");
+                    `value` = {$escapedValue},
+                    `scope` = {$escapedScope}");
         
         return $this;
+    }
+    
+    public function getUserOption($userId, $option, $scope = null) {
+        $escapedUserId = $this->getDb()->quote($userId);
+        $escapedOption = $this->getDb()->quote($option);
+        
+        if ($scope !== null) {
+            $escapedScope = $this->getDb()->quote($scope);
+            return $this->getDb()->exec("SELECT `value` FROM `users_options` WHERE `userId` = {$escapedUserId} AND `option` = {$escapedOption} AND `scope` = {$escapedScope} LIMIT 1")->fetchColumn();
+        }
+        
+        return $this->getDb()->exec("SELECT `value` FROM `users_options` WHERE `userId` = {$escapedUserId} AND `option` = {$escapedOption} LIMIT 1")->fetchColumn();
     }
     
     public function removeUserOption($userId, $option){
