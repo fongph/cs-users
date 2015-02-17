@@ -118,7 +118,7 @@ class UsersManager
         
         $escapedUserId = $this->getDb()->quote($userId);
 
-        if (strlen($scopes)) {
+        if (count($scopesConditions)) {
             return $this->getDb()->query("SELECT `option`, `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND (" . implode(' OR ', $scopesConditions) . ")")->fetchAll(\PDO::FETCH_KEY_PAIR);
         }
         
