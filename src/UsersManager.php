@@ -7,7 +7,8 @@ use PDO,
     CS\Settings\GlobalSettings,
     CS\Mail\MailSender,
     CS\Models\User\UserRecord,
-    CS\Models\User\AuthLog\UserAuthLogRecord;
+    CS\Models\User\AuthLog\UserAuthLogRecord,
+    CS\Models\User\Options\UserOptionRecord;
 
 /**
  * Description of Manager
@@ -49,7 +50,7 @@ class UsersManager
     public function setSender(MailSender $sender)
     {
         $this->sender = $sender;
-        
+
         return $this;
     }
 
@@ -73,12 +74,59 @@ class UsersManager
         return PassHash::check_password($hash, $password);
     }
 
+    public function setUserOption($userId, $option, $value)
+    {
+        $escapedUserId = $this->getDb()->quote($userId);
+        $escapedOption = $this->getDb()->quote($option);
+        $escapedValue = $this->getDb()->quote($value);
+        
+        $this->getDb()->exec("INSERT INTO `users_option` SET 
+                    `option` = {$escapedOption},
+                    `value` = {$escapedValue}
+                WHERE 
+                    `user_id` = {$escapedUserId}
+                ON DUPLICATE KEY UPDATE
+                    `value` = {$escapedValue}");
+        
+        return $this;
+    }
+    
+    public function removeUserOption($userId, $option){
+        $escapedUserId = $this->getDb()->quote($userId);
+        $escapedOption = $this->getDb()->quote($option);
+        
+        $this->getDb()->exec("DELETE FROM `users_option` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption}");
+        
+        return $this;
+    }
+
+    public function getUserOptions($userId, $scopes = UserOptionRecord::SCOPE_GLOBAL)
+    {
+        $scopesConditions = array();
+        
+        if (is_array($scopes)) {
+            foreach ($scopes as $value) {
+                if (in_array($value, UserOptionRecord::getAllowedScopes())) {
+                    array_push($scopesConditions, '`scope` = ' . $this->db->quote($value));
+                } 
+            }
+        } else {
+            if (in_array($scopes, UserOptionRecord::getAllowedScopes())) {
+                array_push($scopesConditions, '`scope` = ' . $this->db->quote($scopes));
+            }
+        }
+        
+        $escapedUserId = $this->getDb()->quote($userId);
+
+        if (strlen($scopes)) {
+            return $this->getDb()->query("SELECT `option`, `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND (" . implode(' OR ', $scopesConditions) . ")")->fetchAll(\PDO::FETCH_KEY_PAIR);
+        }
+        
+        return $this->getDb()->query("SELECT `option`, `value` FROM `users_options` WHERE `user_id` = {$escapedUserId}")->fetchAll(\PDO::FETCH_KEY_PAIR);
+    }
+
     public function login($siteId, $email, $password)
     {
-//        if (strlen($password) < 6) {
-//            throw new PasswordTooShortException("User password is too short!");
-//        }
-
         $data = $this->getUserData($siteId, $email);
 
         if ($data == false) {
@@ -96,6 +144,8 @@ class UsersManager
 
         $this->logAuth($data['id']);
         unset($data['locked'], $data['password']);
+
+        $data['options'] = $this->getUserOptions($data['id'], array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
 
         return $data;
     }
@@ -120,8 +170,6 @@ class UsersManager
                                     `site_id` = {$escapedSiteId} AND 
                                     `login` = {$escapedEmail}
                                 LIMIT 1");
-
-
 
         $restorePasswordUrl = GlobalSettings::getRestorePasswordPageUrl($siteId, $email, $secret);
         $this->getSender()->sendLostPassword($email, $restorePasswordUrl);
@@ -163,7 +211,7 @@ class UsersManager
         if (strlen($password) < 6) {
             throw new PasswordTooShortException("User password is too short!");
         }
-        
+
         $userId = $this->getDb()->quote($id);
         $passwordValue = $this->getDb()->quote($this->getPasswordHash($password));
         $this->getDb()->exec("UPDATE `users` SET `password` = {$passwordValue}, `updated_at` = NOW() WHERE `id` = {$userId}");
@@ -291,11 +339,12 @@ class UsersManager
                                         `login` = {$escapedEmail}
                                     LIMIT 1")->fetch(PDO::FETCH_ASSOC);
     }
-    
-    public function getUserId($siteId, $email) {
+
+    public function getUserId($siteId, $email)
+    {
         $escapedSite = $this->db->quote($siteId);
         $escapedEmail = $this->db->quote($email);
-        
+
         return $this->db->query("SELECT
                                         `id` 
                                     FROM `users`
@@ -364,9 +413,9 @@ class UsersManager
         }
 
         $userAuthLog->save();
-        
+
         (new UsersNotes($this->db))
-            ->addSystemNote($id, UsersNotes::TYPE_AUTH, null, $userAuthLog->getId());
+                ->addSystemNote($id, UsersNotes::TYPE_AUTH, null, $userAuthLog->getId());
     }
 
     public function lock($id)
@@ -413,10 +462,12 @@ class UsersManager
         if ($this->buildDirectLoginHash($siteId, $id, $salt) !== $hash) {
             throw new DirectLoginException("Invalid hash!");
         }
-        
+
         if (($data = $this->getUserDataById($siteId, $id)) === false) {
             throw new DirectLoginException("User not found!");
         }
+
+        $data['options'] = $this->getUserOptions($id, array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
         
         return $data;
     }
