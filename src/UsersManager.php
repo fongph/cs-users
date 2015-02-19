@@ -76,17 +76,17 @@ class UsersManager
 
     public function setUserOption($userId, $option, $value, $scope = UserOptionRecord::SCOPE_GLOBAL)
     {
+        
         $escapedUserId = $this->getDb()->quote($userId);
         $escapedOption = $this->getDb()->quote($option);
         $escapedValue = $this->getDb()->quote($value);
         $escapedScope = $this->getDb()->quote($scope);
         
-        $this->getDb()->exec("INSERT INTO `users_option` SET 
+        $this->getDb()->exec("INSERT INTO `users_options` SET 
+                    `user_id` = {$escapedUserId},
                     `option` = {$escapedOption},
-                    `value` = {$escapedValue}
+                    `value` = {$escapedValue},
                     `scope` = {$escapedScope}
-                WHERE 
-                    `user_id` = {$escapedUserId}
                 ON DUPLICATE KEY UPDATE
                     `value` = {$escapedValue},
                     `scope` = {$escapedScope}");
