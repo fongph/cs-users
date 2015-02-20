@@ -110,7 +110,7 @@ class UsersManager
         $escapedUserId = $this->getDb()->quote($userId);
         $escapedOption = $this->getDb()->quote($option);
         
-        $this->getDb()->exec("DELETE FROM `users_option` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption}");
+        $this->getDb()->exec("DELETE FROM `users_options` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption}");
         
         return $this;
     }
