@@ -466,6 +466,29 @@ class UsersManager
 
         return $userRecord->getId();
     }
+    
+    // FreeTrial
+    public function createUserFreeTrial($siteId, $email, $name)
+    {
+        if ($this->isUser($siteId, $email)) {
+            throw new UserAlreadyExistsException("User with this login already exists on this site!");
+        }
+
+        $password = substr($this->getRandomString(), 0, 8);
+        $emailConfirmHash = $this->getRandomString('confirm');
+
+        $userRecord = new UserRecord($this->db);
+        $userRecord->setSiteId($siteId)
+                ->setLogin($email)
+                ->setName( $name )
+                ->setPassword($this->getPasswordHash($password))
+                ->setEmailConfirmHash($emailConfirmHash)
+                ->save();
+
+        $this->getSender()->sendFreeTrialWelcome($email, $email, $password);
+
+        return $userRecord->getId();
+    }
 
     public function buildDirectLoginHash($siteId, $id, $salt)
     {
