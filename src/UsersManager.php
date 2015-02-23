@@ -100,10 +100,10 @@ class UsersManager
         
         if ($scope !== null) {
             $escapedScope = $this->getDb()->quote($scope);
-            return $this->getDb()->exec("SELECT `value` FROM `users_options` WHERE `userId` = {$escapedUserId} AND `option` = {$escapedOption} AND `scope` = {$escapedScope} LIMIT 1")->fetchColumn();
+            return $this->getDb()->exec("SELECT `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption} AND `scope` = {$escapedScope} LIMIT 1")->fetchColumn();
         }
         
-        return $this->getDb()->exec("SELECT `value` FROM `users_options` WHERE `userId` = {$escapedUserId} AND `option` = {$escapedOption} LIMIT 1")->fetchColumn();
+        return $this->getDb()->exec("SELECT `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption} LIMIT 1")->fetchColumn();
     }
     
     public function removeUserOption($userId, $option){
