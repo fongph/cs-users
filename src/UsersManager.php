@@ -389,6 +389,8 @@ class UsersManager
         if ($data == false) {
             throw new UserNotFoundException("User not found!");
         }
+        
+        $data['options'] = $this->getUserOptions($data['id'], array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
 
         return $data;
     }
