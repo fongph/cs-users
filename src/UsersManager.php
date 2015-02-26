@@ -511,6 +511,31 @@ class UsersManager
         
         return $data;
     }
+    
+    public function deleteUser($id) {
+        $userId = $this->db->quote($id);
+        
+        $this->db->beginTransaction();
+        $this->db->exec("DELETE FROM `orders_history` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})");
+        $this->db->exec("DELETE FROM `orders_payments_products` WHERE `order_payment_id` IN (SELECT id FROM `orders_payments` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId}))");
+        $this->db->exec("DELETE FROM `orders_payments` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})");
+        $this->db->exec("DELETE FROM `codes` WHERE license_id IN (SELECT `id` FROM `licenses` WHERE `order_product_id` IN (SELECT `id` FROM `orders_products` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})))");
+        $this->db->exec("DELETE FROM `subscriptions` WHERE license_id IN (SELECT `id` FROM `licenses` WHERE `order_product_id` IN (SELECT `id` FROM `orders_products` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})))");
+        $this->db->exec("DELETE FROM `licenses` WHERE `order_product_id` IN (SELECT `id` FROM `orders_products` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId}))");
+        $this->db->exec("DELETE FROM `licenses` WHERE `user_id` = {$userId}");
+        $this->db->exec("DELETE FROM `orders_products` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})");
+        $this->db->exec("DELETE FROM `orders` WHERE `user_id` = {$userId}");
+        $this->db->exec("DELETE FROM `devices_icloud` WHERE `dev_id` IN (SELECT `id` FROM `devices` WHERE `user_id` = {$userId})");
+        $this->db->exec("DELETE FROM `devices_limitations` WHERE `device_id` IN (SELECT `id` FROM `devices` WHERE `user_id` = {$userId})");
+        $this->db->exec("DELETE FROM `devices` WHERE `user_id` = {$userId}");
+        $this->db->exec("DELETE FROM `users_auth_attempts` WHERE `user_id` = {$userId}");
+        $this->db->exec("DELETE FROM `users_auth_log` WHERE `user_id` = {$userId}");
+        $this->db->exec("DELETE FROM `users_notes` WHERE `user_id` = {$userId}");
+        $this->db->exec("DELETE FROM `users_options` WHERE `user_id` = {$userId}");
+        $this->db->exec("DELETE FROM `users_system_notes` WHERE `user_id` = {$userId}");
+        $this->db->exec("DELETE FROM `users` WHERE `id` = {$userId}");
+        $this->db->commit();
+    }
 
     /**
      * 
