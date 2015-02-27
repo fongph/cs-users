@@ -520,6 +520,7 @@ class UsersManager
         $this->db->exec("DELETE FROM `orders_payments_products` WHERE `order_payment_id` IN (SELECT id FROM `orders_payments` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId}))");
         $this->db->exec("DELETE FROM `orders_payments` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})");
         $this->db->exec("DELETE FROM `codes` WHERE license_id IN (SELECT `id` FROM `licenses` WHERE `order_product_id` IN (SELECT `id` FROM `orders_products` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})))");
+        $this->db->exec("DELETE FROM `codes` WHERE `user_id` = {$userId}");
         $this->db->exec("DELETE FROM `subscriptions` WHERE license_id IN (SELECT `id` FROM `licenses` WHERE `order_product_id` IN (SELECT `id` FROM `orders_products` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})))");
         $this->db->exec("DELETE FROM `licenses` WHERE `order_product_id` IN (SELECT `id` FROM `orders_products` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId}))");
         $this->db->exec("DELETE FROM `licenses` WHERE `user_id` = {$userId}");
