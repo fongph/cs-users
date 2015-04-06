@@ -422,7 +422,7 @@ class UsersManager
         return $data;
     }
 
-    private function logAuth($id)
+    private function logAuth($userId)
     {
         $info = get_browser();
 
@@ -432,7 +432,7 @@ class UsersManager
 
         $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
-        $userAuthLog->setUserId(intval($id))
+        $userAuthLog->setUserId($userId)
                 ->setIp($ip)
                 ->setCountry(IP::getCountry($ip))
                 ->setFullInfo(@json_encode($info))
@@ -459,7 +459,7 @@ class UsersManager
         $userAuthLog->save();
 
         $usersNotes = $this->getUsersNotesProcessor();
-        $usersNotes->accountEntered($id);
+        $usersNotes->accountEntered($userAuthLog->id, $userId);
     }
 
     public function lock($id)
@@ -539,7 +539,7 @@ class UsersManager
         $data['admin_id'] = $adminId;
 
         $usersNotes = new UsersNotes($this->db, $userId, $adminId);
-        $usersNotes->accountEntered();
+        $usersNotes->accountEnteredAdmin();
         
         return $data;
     }

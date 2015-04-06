@@ -183,7 +183,24 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function accountEntered($userId = null)
+    public function accountEntered($authLogId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_AUTH)
+                ->setUserId($realUserId)
+                ->setJoinId($authLogId)
+                ->setContent("Login under account");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    public function accountEnteredAdmin($userId = null)
     {
         $realUserId = $this->getUserId($userId);
         
