@@ -22,32 +22,68 @@ class UsersNotes
      *
      * @var int
      */
+    private $userId;
+
+    /**
+     *
+     * @var int
+     */
     private $adminId;
     protected $availableTypes = array(
         self::TYPE_AUTH,
         self::TYPE_SYSTEM,
     );
 
-    public function __construct(PDO $db, $adminId = null)
+    /**
+     * 
+     * @todo set $userId required by default
+     * @param PDO $db
+     * @param type $userId
+     * @param type $adminId
+     */
+    public function __construct(PDO $db, $userId = null, $adminId = null)
     {
         $this->db = $db;
+        $this->userId = $userId;
         $this->adminId = $adminId;
     }
 
-    public function deviceAdded($userId, $deviceId)
+    private function getUserId($value)
     {
-        $usersSystemNote = new UsersSystemNoteRecord($this->db);
-        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
-                ->setContent("New device #{$deviceId} added")
-                ->save();
+        if ($value !== null) {
+            return $value;
+        }
+        
+        if ($this->userId === null) {
+            throw new Exception("UserId required!");
+        }
+        
+        return $this->userId;
     }
 
-    public function deviceDeletedFromCp($userId, $deviceId)
+    public function deviceAdded($deviceId, $userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
+                ->setContent("New device #{$deviceId} added");
+                
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();     
+    }
+
+    public function deviceDeletedFromCp($deviceId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
                 ->setContent("Device #{$deviceId} deleted from CP");
 
         if ($this->adminId !== null) {
@@ -57,11 +93,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function licenseAssigned($userId, $licenseId, $deviceId)
+    public function licenseAssigned($licenseId, $deviceId, $userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} assigned to device #{$deviceId}");
 
         if ($this->adminId !== null) {
@@ -71,11 +109,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function licenseAdded($userId, $licenseId)
+    public function licenseAdded($licenseId, $userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} added");
 
         if ($this->adminId !== null) {
@@ -85,19 +125,23 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function licenseExpired($userId, $licenseId)
+    public function licenseExpired($licenseId, $userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} expired");
     }
 
-    public function licenseDropped($userId, $licenseId)
+    public function licenseDropped($licenseId, $userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} expired");
 
         if ($this->adminId !== null) {
@@ -107,11 +151,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function licenseUnAssigned($userId, $licenseId)
+    public function licenseUnAssigned($licenseId, $userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} unassigned");
 
         if ($this->adminId !== null) {
@@ -121,11 +167,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function deviceLimitsUpdated($userId, $deviceId)
+    public function deviceLimitsUpdated($deviceId, $userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Device #{$deviceId} limits updated");
 
         if ($this->adminId !== null) {
@@ -135,11 +183,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function accountEntered($userId)
+    public function accountEntered($userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Login under account");
 
         if ($this->adminId !== null) {
@@ -149,11 +199,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function accountLocked($userId)
+    public function accountLocked($userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Account locked");
 
         if ($this->adminId !== null) {
@@ -163,11 +215,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function accountUnlocked($userId)
+    public function accountUnlocked($userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Account unlocked");
 
         if ($this->adminId !== null) {
@@ -177,11 +231,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function accountRestored($userId)
+    public function accountRestored($userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Restore email successfully sent!");
 
         if ($this->adminId !== null) {
@@ -191,11 +247,13 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function accountCustomPasswordSaved($userId)
+    public function accountCustomPasswordSaved($userId = null)
     {
+        $realUserId = $this->getUserId($userId);
+        
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($userId)
+                ->setUserId($realUserId)
                 ->setContent("Custom password successfully saved!");
 
         if ($this->adminId !== null) {
