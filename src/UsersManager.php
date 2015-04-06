@@ -422,7 +422,7 @@ class UsersManager
         return $data;
     }
 
-    private function logAuth($userId)
+    public function logAuth($userId)
     {
         $info = get_browser();
 
