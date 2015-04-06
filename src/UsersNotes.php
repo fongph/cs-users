@@ -190,8 +190,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_AUTH)
                 ->setUserId($realUserId)
-                ->setJoinId($authLogId)
-                ->setContent("Login under account");
+                ->setJoinId($authLogId);
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
