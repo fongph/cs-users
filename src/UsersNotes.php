@@ -77,14 +77,14 @@ class UsersNotes
         $usersSystemNote->save();     
     }
 
-    public function deviceDeletedFromCp($deviceId, $userId = null)
+    public function deviceDeleted($deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
         
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Device #{$deviceId} deleted from CP");
+                ->setContent("Device #{$deviceId} deleted");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
@@ -117,6 +117,22 @@ class UsersNotes
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} added");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    public function licenseRebilled($licenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription #{$licenseId} rebilled");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
