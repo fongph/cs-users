@@ -492,22 +492,24 @@ class UsersManager
         return $userRecord->getId();
     }
 
-    public function buildDirectLoginHash($siteId, $id, $salt)
+    public function buildDirectLoginHash($siteId, $userId, $adminId, $salt)
     {
-        return md5($siteId . $salt . $id . $salt);
+        return md5($siteId . $salt . $userId . $salt . $adminId . $salt);
     }
 
-    public function getDirectLoginUserData($siteId, $id, $hash, $salt)
+    public function getDirectLoginUserData($siteId, $userId, $adminId, $hash, $salt)
     {
-        if ($this->buildDirectLoginHash($siteId, $id, $salt) !== $hash) {
+        if ($this->buildDirectLoginHash($siteId, $userId, $adminId, $salt) !== $hash) {
             throw new DirectLoginException("Invalid hash!");
         }
 
-        if (($data = $this->getUserDataById($siteId, $id)) === false) {
+        if (($data = $this->getUserDataById($siteId, $userId)) === false) {
             throw new DirectLoginException("User not found!");
         }
 
-        $data['options'] = $this->getUserOptions($id, array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
+        $data['options'] = $this->getUserOptions($userId, array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
+        
+        $data['admin_id'] = $adminId;
         
         return $data;
     }
