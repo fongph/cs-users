@@ -459,7 +459,7 @@ class UsersManager
         $userAuthLog->save();
 
         $usersNotes = $this->getUsersNotesProcessor();
-        $usersNotes->accountEntered($userAuthLog->id, $userId);
+        $usersNotes->accountEntered($userAuthLog->getId(), $userId);
     }
 
     public function lock($id)
