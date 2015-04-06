@@ -27,6 +27,12 @@ class UsersManager
 
     /**
      *
+     * @var UsersNotes
+     */
+    protected $usersNotes;
+    
+    /**
+     *
      * @var MailSender 
      */
     protected $sender;
@@ -74,6 +80,27 @@ class UsersManager
         return PassHash::check_password($hash, $password);
     }
 
+    public function setUsersNotesProcessor(UsersNotes $usersNotes)
+    {
+        $this->usersNotes = $usersNotes;
+
+        return $this;
+    }
+
+    /**
+     * 
+     * @todo remove creating instance inside by default
+     * @return UsersNotes
+     */
+    private function getUsersNotesProcessor()
+    {
+        if (!($this->usersNotes instanceof UsersNotes)) {
+            $this->usersNotes = new UsersNotes($this->db);
+        }
+        
+        return $this->usersNotes;
+    }
+    
     public function setUserOption($userId, $option, $value, $scope = UserOptionRecord::SCOPE_GLOBAL)
     {
         
@@ -431,8 +458,8 @@ class UsersManager
 
         $userAuthLog->save();
 
-        (new UsersNotes($this->db))
-                ->addSystemNote($id, UsersNotes::TYPE_AUTH, null, $userAuthLog->getId());
+        $usersNotes = $this->getUsersNotesProcessor();
+        $usersNotes->accountEntered($id);
     }
 
     public function lock($id)
@@ -510,6 +537,9 @@ class UsersManager
         $data['options'] = $this->getUserOptions($userId, array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
         
         $data['admin_id'] = $adminId;
+
+        $usersNotes = new UsersNotes($this->db, $userId, $adminId);
+        $usersNotes->accountEntered();
         
         return $data;
     }
