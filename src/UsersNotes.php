@@ -93,6 +93,22 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
+    public function deviceLimitsUpdated($deviceId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device #{$deviceId} limits updated");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
     public function licenseAssigned($licenseId, $deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -167,30 +183,14 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function licenseUnAssigned($licenseId, $userId = null)
+    public function licenseUnAssigned($licenseId, $deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
         
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Subscription #{$licenseId} unassigned");
-
-        if ($this->adminId !== null) {
-            $usersSystemNote->setAdminId($this->adminId);
-        }
-
-        $usersSystemNote->save();
-    }
-
-    public function deviceLimitsUpdated($deviceId, $userId = null)
-    {
-        $realUserId = $this->getUserId($userId);
-        
-        $usersSystemNote = new UsersSystemNoteRecord($this->db);
-        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($realUserId)
-                ->setContent("Device #{$deviceId} limits updated");
+                ->setContent("Subscription #{$licenseId} unassigned from device #{$deviceId}");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
