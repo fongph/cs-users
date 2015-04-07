@@ -167,14 +167,14 @@ class UsersNotes
                 ->setContent("Subscription #{$licenseId} expired");
     }
 
-    public function licenseDropped($licenseId, $userId = null)
+    public function licenseDropped($licenseId, $deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
         
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Subscription #{$licenseId} expired");
+                ->setContent("Subscription #{$licenseId} dropped from device #{$deviceId}");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
