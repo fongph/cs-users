@@ -347,7 +347,7 @@ class UsersNotes
             
             where l.user_id = {$userId}
             group by l.id
-            order by date desc " . $limit)->fetchAll(PDO::FETCH_ASSOC);
+            order by date desc, l.id desc " . $limit)->fetchAll(PDO::FETCH_ASSOC);
 
         $total = $this->db->query("SELECT FOUND_ROWS()")->fetchColumn();
 
