@@ -164,7 +164,8 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Subscription #{$licenseId} expired");
+                ->setContent("Subscription #{$licenseId} expired")
+                ->save();
     }
 
     public function licenseDropped($licenseId, $deviceId, $userId = null)
@@ -287,6 +288,36 @@ class UsersNotes
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
                 ->setContent("Custom password successfully saved!");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    public function licenseSubscriptionAutorenewOff($licenseId, $userId = null) {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription #{$licenseId} autorenew status changed to Off!");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    public function licenseSubscriptionAutorenewOn($licenseId, $userId = null) {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription #{$licenseId} autorenew status changed to On!");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
