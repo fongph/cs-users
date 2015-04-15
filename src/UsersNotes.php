@@ -183,6 +183,23 @@ class UsersNotes
 
         $usersSystemNote->save();
     }
+    
+    public function licenseUpgraded($deviceId, $oldLicenseId, $newLicenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote
+            ->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+            ->setUserId($realUserId)
+            ->setContent("Subscription #{$oldLicenseId} upgraded to #{$newLicenseId} for device #{$deviceId}");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
 
     public function licenseUnAssigned($licenseId, $deviceId, $userId = null)
     {
@@ -378,7 +395,7 @@ class UsersNotes
             
             where l.user_id = {$userId}
             group by l.id
-            order by date desc " . $limit)->fetchAll(PDO::FETCH_ASSOC);
+            order by date desc, l.id desc " . $limit)->fetchAll(PDO::FETCH_ASSOC);
 
         $total = $this->db->query("SELECT FOUND_ROWS()")->fetchColumn();
 
