@@ -324,7 +324,7 @@ class UsersNotes
     
     public function licenseSubscriptionAutoRebillTaskAdded($licenseId, $userId = null, $adminId = null) {
         $realUserId = $this->getUserId($userId);
-        $realAdminId = $this->getAdminIdId($adminId);
+        $realAdminId = $this->getAdminId($adminId);
         
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
