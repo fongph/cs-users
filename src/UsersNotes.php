@@ -60,6 +60,15 @@ class UsersNotes
         
         return $this->userId;
     }
+    
+    private function getAdminId($value)
+    {
+        if ($value !== null) {
+            return $value;
+        }
+        
+        return $this->adminId;
+    }
 
     public function deviceAdded($deviceId, $userId = null)
     {
@@ -313,17 +322,15 @@ class UsersNotes
         $usersSystemNote->save();
     }
     
-    public function licenseSubscriptionAutoRebillTaskAdded($licenseId, $userId = null) {
+    public function licenseSubscriptionAutoRebillTaskAdded($licenseId, $userId = null, $adminId = null) {
         $realUserId = $this->getUserId($userId);
+        $realAdminId = $this->getAdminIdId($adminId);
         
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
+                ->setAdminId($realAdminId)
                 ->setContent("Autorebill status change for subscription #{$licenseId} queued");
-
-        if ($this->adminId !== null) {
-            $usersSystemNote->setAdminId($this->adminId);
-        }
 
         $usersSystemNote->save();
     }
