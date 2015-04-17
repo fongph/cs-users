@@ -288,7 +288,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Restore email successfully sent!");
+                ->setContent("Restore email successfully sent");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
@@ -304,7 +304,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Custom password successfully saved!");
+                ->setContent("Custom password successfully saved");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
@@ -313,6 +313,57 @@ class UsersNotes
         $usersSystemNote->save();
     }
     
+    public function licenseSubscriptionAutoRebillTaskAdded($licenseId, $userId = null) {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Autorebill status change for subscription #{$licenseId} queued");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    public function licenseSubscriptionAutoRebillEnabled($licenseId, $userId = null) {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Autorebill for subscription #{$licenseId} was ENABLED");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    public function licenseSubscriptionAutoRebillDisabled($licenseId, $userId = null) {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Autorebill for subscription #{$licenseId} was DISABLED");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    /**
+     * 
+     * @deprecated
+     * @param type $licenseId
+     * @param type $userId
+     */
     public function licenseSubscriptionAutorenewOff($licenseId, $userId = null) {
         $realUserId = $this->getUserId($userId);
         
@@ -328,6 +379,12 @@ class UsersNotes
         $usersSystemNote->save();
     }
     
+    /**
+     * 
+     * @deprecated
+     * @param type $licenseId
+     * @param type $userId
+     */
     public function licenseSubscriptionAutorenewOn($licenseId, $userId = null) {
         $realUserId = $this->getUserId($userId);
         
