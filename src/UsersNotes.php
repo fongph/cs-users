@@ -242,14 +242,19 @@ class UsersNotes
         $usersSystemNote->save();
     }
     
-    public function accountEnteredAdmin($userId = null)
+    public function accountEnteredAdmin($supportMode = false, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
         
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($realUserId)
-                ->setContent("Login under account");
+                ->setUserId($realUserId);
+        
+        if ($supportMode) {
+            $usersSystemNote->setContent("Login under account as Support");
+        } else {
+            $usersSystemNote->setContent("Login under account as Client");
+        }
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);

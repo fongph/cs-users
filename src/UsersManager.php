@@ -519,12 +519,12 @@ class UsersManager
         return $userRecord->getId();
     }
 
-    public function buildDirectLoginHash($siteId, $userId, $adminId, $salt)
+    public static function buildDirectLoginHash($siteId, $userId, $adminId, $salt)
     {
         return md5($siteId . $salt . $userId . $salt . $adminId . $salt);
     }
 
-    public function getDirectLoginUserData($siteId, $userId, $adminId, $hash, $salt)
+    public function getDirectLoginUserData($siteId, $userId, $adminId, $supportMode, $hash, $salt)
     {
         if ($this->buildDirectLoginHash($siteId, $userId, $adminId, $salt) !== $hash) {
             throw new DirectLoginException("Invalid hash!");
@@ -537,9 +537,13 @@ class UsersManager
         $data['options'] = $this->getUserOptions($userId, array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
         
         $data['admin_id'] = $adminId;
+        
+        if ($supportMode) {
+            $data['support_mode'] = 1;
+        }
 
         $usersNotes = new UsersNotes($this->db, $userId, $adminId);
-        $usersNotes->accountEnteredAdmin();
+        $usersNotes->accountEnteredAdmin($supportMode);
         
         return $data;
     }
