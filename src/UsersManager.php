@@ -475,7 +475,7 @@ class UsersManager
     }
 
     //@TODO: add transactions support
-    public function createUser($siteId, $email)
+    public function createUser($siteId, $email, $name = '')
     {
         if ($this->isUser($siteId, $email)) {
             throw new UserAlreadyExistsException("User with this login already exists on this site!");
@@ -487,6 +487,7 @@ class UsersManager
         $userRecord = new UserRecord($this->db);
         $userRecord->setSiteId($siteId)
                 ->setLogin($email)
+                ->setName($name)
                 ->setPassword($this->getPasswordHash($password))
                 ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
