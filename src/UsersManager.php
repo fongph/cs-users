@@ -301,7 +301,15 @@ class UsersManager
         $site = $this->getDb()->quote($siteId);
         $emailValue = $this->getDb()->quote($email);
         $secretValue = $this->getDb()->quote($secret);
-        return $this->getDb()->exec("UPDATE `users` SET `locked` = 0, `unlock_hash` = '', `updated_at` = NOW() WHERE `site_id` = {$site} AND `login` = {$emailValue} AND `unlock_hash` = {$secretValue} LIMIT 1") > 0;
+        
+        $userId = $this->getDb()->query("SELECT * FROM `users` WHERE `site_id` = {$site} AND `login` = {$emailValue} AND `locked` = 1 AND `unlock_hash` = {$secretValue} LIMIT 1")->fetchColumn();
+        
+        if ($this->getDb()->exec("UPDATE `users` SET `locked` = 0, `unlock_hash` = '', `updated_at` = NOW() WHERE `id` = {$userId} AND `locked` = 1 AND `unlock_hash` = {$secretValue} LIMIT 1") > 0) {
+            $this->getUsersNotesProcessor()->accountUnlocked($userId);
+            return true;
+        }
+        
+        return false;
     }
 
     private function getLoginAttemptsCount($id)
@@ -327,6 +335,7 @@ class UsersManager
     {
         if ($this->getLoginAttemptsCount($data['id']) >= $this->loginAttempts - 1) {
             $this->lockWithHash($siteId, $data['id'], $data['login']);
+            $this->getUsersNotesProcessor()->accountLocked($data['id']);
             throw new UserLockedException("User account is locked out!");
         }
 
