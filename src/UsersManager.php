@@ -30,7 +30,7 @@ class UsersManager
      * @var UsersNotes
      */
     protected $usersNotes;
-    
+
     /**
      *
      * @var MailSender 
@@ -97,18 +97,18 @@ class UsersManager
         if (!($this->usersNotes instanceof UsersNotes)) {
             $this->usersNotes = new UsersNotes($this->db);
         }
-        
+
         return $this->usersNotes;
     }
-    
+
     public function setUserOption($userId, $option, $value, $scope = UserOptionRecord::SCOPE_GLOBAL)
     {
-        
+
         $escapedUserId = $this->getDb()->quote($userId);
         $escapedOption = $this->getDb()->quote($option);
         $escapedValue = $this->getDb()->quote($value);
         $escapedScope = $this->getDb()->quote($scope);
-        
+
         $this->getDb()->exec("INSERT INTO `users_options` SET 
                     `user_id` = {$escapedUserId},
                     `option` = {$escapedOption},
@@ -117,53 +117,55 @@ class UsersManager
                 ON DUPLICATE KEY UPDATE
                     `value` = {$escapedValue},
                     `scope` = {$escapedScope}");
-        
+
         return $this;
     }
-    
-    public function getUserOption($userId, $option, $scope = null) {
+
+    public function getUserOption($userId, $option, $scope = null)
+    {
         $escapedUserId = $this->getDb()->quote($userId);
         $escapedOption = $this->getDb()->quote($option);
-        
+
         if ($scope !== null) {
             $escapedScope = $this->getDb()->quote($scope);
             return $this->getDb()->query("SELECT `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption} AND `scope` = {$escapedScope} LIMIT 1")->fetchColumn();
         }
-        
+
         return $this->getDb()->query("SELECT `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption} LIMIT 1")->fetchColumn();
     }
-    
-    public function removeUserOption($userId, $option){
+
+    public function removeUserOption($userId, $option)
+    {
         $escapedUserId = $this->getDb()->quote($userId);
         $escapedOption = $this->getDb()->quote($option);
-        
+
         $this->getDb()->exec("DELETE FROM `users_options` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption}");
-        
+
         return $this;
     }
 
     public function getUserOptions($userId, $scopes = UserOptionRecord::SCOPE_GLOBAL)
     {
         $scopesConditions = array();
-        
+
         if (is_array($scopes)) {
             foreach ($scopes as $value) {
                 if (in_array($value, UserOptionRecord::getAllowedScopes())) {
                     array_push($scopesConditions, '`scope` = ' . $this->db->quote($value));
-                } 
+                }
             }
         } else {
             if (in_array($scopes, UserOptionRecord::getAllowedScopes())) {
                 array_push($scopesConditions, '`scope` = ' . $this->db->quote($scopes));
             }
         }
-        
+
         $escapedUserId = $this->getDb()->quote($userId);
 
         if (count($scopesConditions)) {
             return $this->getDb()->query("SELECT `option`, `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND (" . implode(' OR ', $scopesConditions) . ")")->fetchAll(\PDO::FETCH_KEY_PAIR);
         }
-        
+
         return $this->getDb()->query("SELECT `option`, `value` FROM `users_options` WHERE `user_id` = {$escapedUserId}")->fetchAll(\PDO::FETCH_KEY_PAIR);
     }
 
@@ -195,26 +197,27 @@ class UsersManager
     //@TODO: add transactions support
     public function lostPassword($siteId, $email)
     {
-        if (!$this->isUser($siteId, $email)) {
+        if (($userId = $this->getUserId($siteId, $email)) === false) {
             throw new UsersEmailNotFoundException();
         }
 
         $secret = $this->getRandomString();
 
-        $escapedSiteId = $this->getDb()->quote($siteId);
-        $escapedEmail = $this->getDb()->quote($email);
+        $escapedUserId = $this->getDb()->quote($userId);
         $secretValue = $this->getDb()->quote($secret);
 
         $this->getDb()->exec("UPDATE `users` SET 
                                     `restore_hash` = {$secretValue}, 
                                     `updated_at` = NOW() 
                                 WHERE 
-                                    `site_id` = {$escapedSiteId} AND 
-                                    `login` = {$escapedEmail}
+                                    `id` = {$escapedUserId}
                                 LIMIT 1");
 
         $restorePasswordUrl = GlobalSettings::getRestorePasswordPageUrl($siteId, $email, $secret);
-        $this->getSender()->sendLostPassword($email, $restorePasswordUrl);
+
+        $this->getSender()
+                ->setUserId($userId)
+                ->sendLostPassword($email, $restorePasswordUrl);
 
         return true;
     }
@@ -301,14 +304,14 @@ class UsersManager
         $site = $this->getDb()->quote($siteId);
         $emailValue = $this->getDb()->quote($email);
         $secretValue = $this->getDb()->quote($secret);
-        
+
         $userId = $this->getDb()->query("SELECT * FROM `users` WHERE `site_id` = {$site} AND `login` = {$emailValue} AND `locked` = 1 AND `unlock_hash` = {$secretValue} LIMIT 1")->fetchColumn();
-        
+
         if ($this->getDb()->exec("UPDATE `users` SET `locked` = 0, `unlock_hash` = '', `updated_at` = NOW() WHERE `id` = {$userId} AND `locked` = 1 AND `unlock_hash` = {$secretValue} LIMIT 1") > 0) {
             $this->getUsersNotesProcessor()->accountUnlocked($userId);
             return true;
         }
-        
+
         return false;
     }
 
@@ -353,7 +356,9 @@ class UsersManager
         $this->db->exec("UPDATE `users` SET `unlock_hash` = {$secretValue}, `locked` = 1, `updated_at` = NOW() WHERE `id` = {$userId}");
 
         $unlockAccountUrl = GlobalSettings::getUnlockAccountPageUrl($siteId, $email, $secret);
-        $this->getSender()->sendUnlockPassword($email, $unlockAccountUrl);
+        $this->getSender()
+                ->setUserId($id)
+                ->sendUnlockPassword($email, $unlockAccountUrl);
 
         $this->removeLoginAttempts($id);
         return true;
@@ -425,7 +430,7 @@ class UsersManager
         if ($data == false) {
             throw new UserNotFoundException("User not found!");
         }
-        
+
         $data['options'] = $this->getUserOptions($data['id'], array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
 
         return $data;
@@ -501,11 +506,13 @@ class UsersManager
                 ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
 
-        $this->getSender()->sendRegistrationSuccessWithPassword($email, $email, $password);
+        $this->getSender()
+                ->setUserId($userRecord->getId())
+                ->sendRegistrationSuccessWithPassword($email, $email, $password);
 
         return $userRecord->getId();
     }
-    
+
     // FreeTrial
     public function createUserFreeTrial($siteId, $email, $name)
     {
@@ -519,12 +526,14 @@ class UsersManager
         $userRecord = new UserRecord($this->db);
         $userRecord->setSiteId($siteId)
                 ->setLogin($email)
-                ->setName( $name )
+                ->setName($name)
                 ->setPassword($this->getPasswordHash($password))
                 ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
 
-        $this->getSender()->sendFreeTrialWelcome($email, $email, $password);
+        $this->getSender()
+                ->setUserId($userRecord->getId())
+                ->sendFreeTrialWelcome($email, $email, $password);
 
         return $userRecord->getId();
     }
@@ -545,22 +554,23 @@ class UsersManager
         }
 
         $data['options'] = $this->getUserOptions($userId, array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
-        
+
         $data['admin_id'] = $adminId;
-        
+
         if ($supportMode) {
             $data['support_mode'] = 1;
         }
 
         $usersNotes = new UsersNotes($this->db, $userId, $adminId);
         $usersNotes->accountEnteredAdmin($supportMode);
-        
+
         return $data;
     }
-    
-    public function deleteUser($id) {
+
+    public function deleteUser($id)
+    {
         $userId = $this->db->quote($id);
-        
+
         $this->db->beginTransaction();
         $this->db->exec("DELETE FROM `orders_history` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId})");
         $this->db->exec("DELETE FROM `orders_payments_products` WHERE `order_payment_id` IN (SELECT id FROM `orders_payments` WHERE `order_id` IN (SELECT id FROM `orders` WHERE `user_id` = {$userId}))");
