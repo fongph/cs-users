@@ -215,6 +215,8 @@ class UsersManager
 
         $restorePasswordUrl = GlobalSettings::getRestorePasswordPageUrl($siteId, $email, $secret);
 
+        $this->getUsersNotesProcessor()->accountRestored($userId);
+        
         $this->getSender()
                 ->setUserId($userId)
                 ->sendLostPassword($email, $restorePasswordUrl);
