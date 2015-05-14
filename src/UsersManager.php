@@ -378,7 +378,7 @@ class UsersManager
         return $this->getDb()->query("SELECT COUNT(*) FROM `users` WHERE `site_id` = {$escapedSiteId} AND `login` = {$escapedEmail} LIMIT 1")->fetchColumn() > 0;
     }
 
-    private function getUserData($siteId, $email)
+    public function getUserData($siteId, $email)
     {
         $escapedSite = $this->db->quote($siteId);
         $escapedEmail = $this->db->quote($email);
