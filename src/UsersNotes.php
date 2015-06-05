@@ -327,6 +327,18 @@ class UsersNotes
         $usersSystemNote->save();
     }
     
+    public function supportTicketSent($ticketId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+            ->setUserId($realUserId)
+            ->setContent("Support Ticket #{$ticketId} has been successfully sent");
+
+        $usersSystemNote->save();
+    }
+    
     public function licenseSubscriptionAutoRebillTaskAdded($licenseId, $userId = null, $adminId = null) {
         $realUserId = $this->getUserId($userId);
         $realAdminId = $this->getAdminId($adminId);
