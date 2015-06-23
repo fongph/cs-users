@@ -125,7 +125,23 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Device #{$deviceId} ({$model}, {$name}) was connected to Find My iPhone service");
+                ->setContent("Device #{$deviceId} ({$model}, {$name}) was manually connected to Find My iPhone service");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    public function deviceFindMyIphoneAutoConnected($deviceId, $model, $name, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device #{$deviceId} ({$model}, {$name}) was automatically manually connected to Find My iPhone service");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
