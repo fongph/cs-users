@@ -118,6 +118,38 @@ class UsersNotes
         $usersSystemNote->save();
     }
     
+    public function deviceFindMyIphoneConnected($deviceId, $model, $name, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device #{$deviceId} ({$model}, {$name}) was connected to Find My iPhone service");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
+    public function deviceFindMyIphoneDisconnected($deviceId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device #{$deviceId} was disconnected from Find My iPhone service");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+    }
+    
     public function licenseAssigned($licenseId, $deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
