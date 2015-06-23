@@ -298,7 +298,13 @@ class UsersManager
         $siteValue = $this->getDb()->quote($siteId);
         $secretValue = $this->getDb()->quote($secret);
 
-        return $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `site_id` = {$siteValue} AND `login` = {$emailValue} AND `restore_hash` = {$secretValue}") > 0;
+        $isChanged = $this->getDb()->exec("UPDATE `users` SET `restore_hash` = '', `password` = {$password}, `updated_at` = NOW() WHERE `site_id` = {$siteValue} AND `login` = {$emailValue} AND `restore_hash` = {$secretValue}") > 0;
+
+        if ($isChanged) {
+            $this->getUsersNotesProcessor()->accountCustomPasswordSaved($this->getUserId($siteId, $email));
+        }
+        
+        return $isChanged;
     }
 
     public function unlockAccount($siteId, $email, $secret)
@@ -378,7 +384,7 @@ class UsersManager
         return $this->getDb()->query("SELECT COUNT(*) FROM `users` WHERE `site_id` = {$escapedSiteId} AND `login` = {$escapedEmail} LIMIT 1")->fetchColumn() > 0;
     }
 
-    private function getUserData($siteId, $email)
+    public function getUserData($siteId, $email)
     {
         $escapedSite = $this->db->quote($siteId);
         $escapedEmail = $this->db->quote($email);

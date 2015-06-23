@@ -359,6 +359,18 @@ class UsersNotes
         $usersSystemNote->save();
     }
     
+    public function supportTicketSent($ticketId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+            ->setUserId($realUserId)
+            ->setContent("Support Ticket #{$ticketId} has been successfully sent");
+
+        $usersSystemNote->save();
+    }
+    
     public function licenseSubscriptionAutoRebillTaskAdded($licenseId, $userId = null, $adminId = null) {
         $realUserId = $this->getUserId($userId);
         $realAdminId = $this->getAdminId($adminId);
@@ -422,6 +434,30 @@ class UsersNotes
 
         $usersSystemNote->save();
     }
+    
+    public function iCloudNewModuleError($moduleName, $errorName, $userId = null){
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+            ->setUserId($realUserId)
+            ->setContent("Found new module error {$moduleName} {$errorName}");
+
+        $usersSystemNote->save();
+    }
+
+    public function iCloudNewFixedModules(array $fixes, $userId = null){
+        $realUserId = $this->getUserId($userId);
+        $fixesList = implode(', ', $fixes);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+            ->setUserId($realUserId)
+            ->setContent("Fixed modules bug: [{$fixesList}]");
+
+        $usersSystemNote->save();
+    }
+    
     
     /**
      * 
