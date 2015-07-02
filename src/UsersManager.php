@@ -38,10 +38,18 @@ class UsersManager
     protected $sender;
     protected $loginAttempts = 5;
     protected $loginAttemptsPeriod = 300; // 5 min
+    
+    /**
+     *
+     * @var boolean
+     */
+    private static $listenersRegistered = false;
 
     public function __construct(\PDO $db)
     {
         $this->db = $db;
+
+        self::registerListeners($db);
     }
 
     /**
@@ -216,7 +224,7 @@ class UsersManager
         $restorePasswordUrl = GlobalSettings::getRestorePasswordPageUrl($siteId, $email, $secret);
 
         $this->getUsersNotesProcessor()->accountRestored($userId);
-        
+
         $this->getSender()
                 ->setUserId($userId)
                 ->sendLostPassword($email, $restorePasswordUrl);
@@ -303,7 +311,7 @@ class UsersManager
         if ($isChanged) {
             $this->getUsersNotesProcessor()->accountCustomPasswordSaved($this->getUserId($siteId, $email));
         }
-        
+
         return $isChanged;
     }
 
@@ -402,6 +410,13 @@ class UsersManager
                                         `site_id` = {$escapedSite} AND
                                         `login` = {$escapedEmail}
                                     LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getUserEmail($userId)
+    {
+        $escapedUserId = $this->db->quote($userId);
+
+        return $this->db->query("SELECT `login` FROM `users` ON `id` = {$escapedUserId} LIMIT 1")->fetchColumn();
     }
 
     public function getUserId($siteId, $email)
@@ -616,6 +631,34 @@ class UsersManager
         }
 
         return $user;
+    }
+
+    public static function registerListeners(PDO $pdo)
+    {
+        if (self::$listenersRegistered) {
+            return;
+        }
+
+        $manager = EventManager::getInstance();
+
+        $manager->on('email-send', function($data) use ($pdo) {
+            if (isset($data['userId'])) {
+                self::logUserEmailSended($pdo, $data['userId'], $data['type']);
+            }
+        });
+
+        $jiraLogger = new JiraLogger($pdo);
+        $jiraLogger->registerListeners();
+
+        self::$listenersRegistered = true;
+    }
+
+    private static function logUserEmailSended(PDO $pdo, $userId, $type)
+    {
+        $escapedUserId = $pdo->quote($userId);
+        $escapedType = $pdo->quote($type);
+
+        $pdo->exec("INSERT INTO `users_emails_log` SET `user_id` = {$escapedUserId}, `type` = {$escapedType}");
     }
 
 }

@@ -53,43 +53,45 @@ class UsersNotes
         if ($value !== null) {
             return $value;
         }
-        
+
         if ($this->userId === null) {
             throw new Exception("UserId required!");
         }
-        
+
         return $this->userId;
     }
-    
+
     private function getAdminId($value)
     {
         if ($value !== null) {
             return $value;
         }
-        
+
         return $this->adminId;
     }
 
     public function deviceAdded($deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
                 ->setContent("New device #{$deviceId} added");
-                
+
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
         }
 
-        $usersSystemNote->save();     
+        $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function deviceDeleted($deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -100,12 +102,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function deviceLimitsUpdated($deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -116,12 +120,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
+
     public function deviceFindMyIphoneConnected($deviceId, $model, $name, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -132,12 +138,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
+
     public function deviceFindMyIphoneAutoConnected($deviceId, $model, $name, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -148,12 +156,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
+
     public function deviceFindMyIphoneDisconnected($deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -164,12 +174,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseAssigned($licenseId, $deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -180,12 +192,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function licenseAdded($licenseId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -196,12 +210,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseRebilled($licenseId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -212,23 +228,27 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function licenseExpired($licenseId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} expired")
                 ->save();
+                
+        $this->emitEvent($usersSystemNote);
     }
 
     public function licenseDropped($licenseId, $deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -239,29 +259,33 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseUpgraded($deviceId, $oldLicenseId, $newLicenseId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote
-            ->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-            ->setUserId($realUserId)
-            ->setContent("Subscription #{$oldLicenseId} upgraded to #{$newLicenseId} for device #{$deviceId}");
+                ->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription #{$oldLicenseId} upgraded to #{$newLicenseId} for device #{$deviceId}");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function licenseUnAssigned($licenseId, $deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -272,12 +296,26 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
+    }
+    
+    public function licenseRebillPaymentFailed($licenseId, $userId = null) {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription #{$licenseId} rebill payment failed.")
+                ->save();
+
+        $this->emitEvent($usersSystemNote);
     }
 
     public function accountEntered($authLogId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_AUTH)
                 ->setUserId($realUserId)
@@ -288,16 +326,18 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
+
     public function accountEnteredAdmin($supportMode = false, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId);
-        
+
         if ($supportMode) {
             $usersSystemNote->setContent("Login under account as Support");
         } else {
@@ -309,12 +349,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function accountLocked($userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -325,12 +367,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function accountUnlocked($userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -341,12 +385,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function accountRestored($userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -357,12 +403,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
     public function accountCustomPasswordSaved($userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -373,24 +421,29 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
+
     public function supportTicketSent($ticketId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-            ->setUserId($realUserId)
-            ->setContent("Support Ticket #{$ticketId} has been successfully sent");
+                ->setUserId($realUserId)
+                ->setContent("Support Ticket #{$ticketId} has been successfully sent");
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
-    
-    public function licenseSubscriptionAutoRebillTaskAdded($licenseId, $userId = null, $adminId = null) {
+
+    public function licenseSubscriptionAutoRebillTaskAdded($licenseId, $userId = null, $adminId = null)
+    {
         $realUserId = $this->getUserId($userId);
         $realAdminId = $this->getAdminId($adminId);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -398,11 +451,14 @@ class UsersNotes
                 ->setContent("Autorebill status change for subscription #{$licenseId} queued");
 
         $usersSystemNote->save();
-    }
-    
-    public function licenseSubscriptionAutoRebillEnabled($licenseId, $userId = null) {
-        $realUserId = $this->getUserId($userId);
         
+        $this->emitEvent($usersSystemNote);
+    }
+
+    public function licenseSubscriptionAutoRebillEnabled($licenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -413,11 +469,14 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-    }
-    
-    public function licenseSubscriptionAutoRebillDisabled($licenseId, $userId = null) {
-        $realUserId = $this->getUserId($userId);
         
+        $this->emitEvent($usersSystemNote);
+    }
+
+    public function licenseSubscriptionAutoRebillDisabled($licenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -428,72 +487,49 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-    }
-    
-    /**
-     * 
-     * @deprecated
-     * @param type $licenseId
-     * @param type $userId
-     */
-    public function licenseSubscriptionAutorenewOff($licenseId, $userId = null) {
-        $realUserId = $this->getUserId($userId);
         
+        $this->emitEvent($usersSystemNote);
+    }
+
+    public function iCloudNewModuleError($moduleName, $errorName, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Subscription #{$licenseId} autorenew status changed to Off!");
-
-        if ($this->adminId !== null) {
-            $usersSystemNote->setAdminId($this->adminId);
-        }
+                ->setContent("Found new module error {$moduleName} {$errorName}");
 
         $usersSystemNote->save();
-    }
-    
-    public function iCloudNewModuleError($moduleName, $errorName, $userId = null){
-        $realUserId = $this->getUserId($userId);
-
-        $usersSystemNote = new UsersSystemNoteRecord($this->db);
-        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-            ->setUserId($realUserId)
-            ->setContent("Found new module error {$moduleName} {$errorName}");
-
-        $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
     }
 
-    public function iCloudNewFixedModules(array $fixes, $userId = null){
+    public function iCloudNewFixedModules(array $fixes, $userId = null)
+    {
         $realUserId = $this->getUserId($userId);
         $fixesList = implode(', ', $fixes);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-            ->setUserId($realUserId)
-            ->setContent("Fixed modules bug: [{$fixesList}]");
-
-        $usersSystemNote->save();
-    }
-    
-    
-    /**
-     * 
-     * @deprecated
-     * @param type $licenseId
-     * @param type $userId
-     */
-    public function licenseSubscriptionAutorenewOn($licenseId, $userId = null) {
-        $realUserId = $this->getUserId($userId);
-        
-        $usersSystemNote = new UsersSystemNoteRecord($this->db);
-        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Subscription #{$licenseId} autorenew status changed to On!");
-
-        if ($this->adminId !== null) {
-            $usersSystemNote->setAdminId($this->adminId);
-        }
+                ->setContent("Fixed modules bug: [{$fixesList}]");
 
         $usersSystemNote->save();
+        
+        $this->emitEvent($usersSystemNote);
+    }
+
+    private function emitEvent(UsersSystemNoteRecord $usersSystemNote)
+    {
+        $eventManager = \EventManager::getInstance();
+        
+        $eventManager->emit('user-note-added', array(
+            'userId' => $usersSystemNote->getUserId(),
+            'userNoteId' => $usersSystemNote->getId(),
+            'adminId' => $usersSystemNote->getAdminId(),
+            'message' => $usersSystemNote->getContent()
+        ));
     }
 
     public function addSystemNote($userId, $type = self::TYPE_SYSTEM, $adminId = null, $joinId = null, $content = '')
