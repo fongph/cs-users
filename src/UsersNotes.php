@@ -328,8 +328,6 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-
-        $this->emitEvent($usersSystemNote);
     }
 
     public function accountEnteredAdmin($supportMode = false, $userId = null)
@@ -351,8 +349,6 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-
-        $this->emitEvent($usersSystemNote);
     }
 
     public function accountLocked($userId = null)
