@@ -21,7 +21,7 @@
         "php": ">=5.3.0",
         "boomers/ip": "dev-master",
         "boomers/cs-models": "dev-master",
-        "boomers/cs-mail": "dev-dev-jira",
+        "boomers/cs-mail": "dev-master",
         "eventmanager/eventmanager": "*",
         "rastor/jira-client": "0.3",
         "monolog/monolog": "1.*",
