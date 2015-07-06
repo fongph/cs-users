@@ -22,7 +22,7 @@
         "boomers/ip": "dev-master",
         "boomers/cs-models": "dev-master",
         "boomers/cs-mail": "dev-master",
-        "eventmanager/eventmanager": "*",
+        "rastor/eventmanager": "1.1",
         "rastor/jira-client": "0.3",
         "monolog/monolog": "1.*",
         "filp/whoops": "~1.0"

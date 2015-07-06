@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c65e68b33830c60681acb6bcd5647e46",
+    "hash": "3b86896ee33d9c0f712ab7c7fee02a41",
     "packages": [
         {
             "name": "boomers/cs-mail",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@bitbucket.org:boomersweb/cs-mail.git",
-                "reference": "6338068aff1d3edd9cf2882d7d7d0b69a57fd152"
+                "reference": "344aba6d16774bb24ea257f47a1de5a9c03129f6"
             },
             "require": {
                 "guzzlehttp/guzzle": "~5.0",
                 "php": ">=5.4.0",
-                "rastor/eventmanager": "*"
+                "rastor/eventmanager": "1.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "4.*"
@@ -31,7 +31,7 @@
             "license": [
                 "MIT"
             ],
-            "time": "2015-07-06 08:22:25"
+            "time": "2015-07-06 08:32:33"
         },
         {
             "name": "boomers/cs-models",
@@ -73,49 +73,6 @@
                 ]
             },
             "time": "2014-11-11 13:33:06"
-        },
-        {
-            "name": "eventmanager/eventmanager",
-            "version": "1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ashwinks/php-event-manager.git",
-                "reference": "fc178e19b8f2b52f78eb7150d6c0cec802d9ca4e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ashwinks/php-event-manager/zipball/fc178e19b8f2b52f78eb7150d6c0cec802d9ca4e",
-                "reference": "fc178e19b8f2b52f78eb7150d6c0cec802d9ca4e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "EventManager": "."
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ashwin Surajbali",
-                    "email": "ashwin@redinkdesign.net",
-                    "homepage": "http://www.redinkdesign.co"
-                }
-            ],
-            "description": "PHP Event Manager",
-            "homepage": "https://github.com/ashwinks/php-event-manager.git",
-            "keywords": [
-                "event driven",
-                "event manager",
-                "events"
-            ],
-            "time": "2014-02-28 19:03:07"
         },
         {
             "name": "filp/whoops",
@@ -450,16 +407,16 @@
         },
         {
             "name": "rastor/eventmanager",
-            "version": "1.0",
+            "version": "v1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/oRastor/php-event-manager.git",
-                "reference": "fc178e19b8f2b52f78eb7150d6c0cec802d9ca4e"
+                "reference": "6b64e1b1b8b0dab8c6293339614729c4c8256c84"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oRastor/php-event-manager/zipball/fc178e19b8f2b52f78eb7150d6c0cec802d9ca4e",
-                "reference": "fc178e19b8f2b52f78eb7150d6c0cec802d9ca4e",
+                "url": "https://api.github.com/repos/oRastor/php-event-manager/zipball/6b64e1b1b8b0dab8c6293339614729c4c8256c84",
+                "reference": "6b64e1b1b8b0dab8c6293339614729c4c8256c84",
                 "shasum": ""
             },
             "require": {
@@ -489,7 +446,7 @@
                 "event manager",
                 "events"
             ],
-            "time": "2014-02-28 19:03:07"
+            "time": "2015-07-06 08:29:29"
         },
         {
             "name": "rastor/jira-client",
