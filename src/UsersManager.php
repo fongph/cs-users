@@ -639,7 +639,7 @@ class UsersManager
             return;
         }
 
-        $manager = EventManager::getInstance();
+        $manager = \EventManager::getInstance();
 
         $manager->on('email-send', function($data) use ($pdo) {
             if (isset($data['userId'])) {
