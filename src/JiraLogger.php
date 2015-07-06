@@ -37,6 +37,10 @@ class JiraLogger
             }
         });
 
+        $manager->on('user-deleted', function($data) {
+            $this->logEvent($data, 'user-deleted');
+        });
+
         $this->registerBillingListeners($manager);
         $this->registerFrontListeners($manager);
     }
@@ -100,7 +104,7 @@ class JiraLogger
         $manager->on('billing-fraud', function($data) {
             $this->logEvent($data, 'billing-fraud');
         });
-        
+
         $manager->on('billing-rebill-failed', function($data) {
             $this->logEvent($data, 'billing-rebill-failed');
         });
