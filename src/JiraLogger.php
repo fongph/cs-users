@@ -34,9 +34,7 @@ class JiraLogger
         });
 
         $manager->on('user-note-added', function($data) {
-            if (!$data['system']) {
-                $this->logUserNoteAdded($data);
-            }
+            $this->logUserNoteAdded($data);
         });
 
         $manager->on('user-deleted', function($data) {
@@ -72,7 +70,7 @@ class JiraLogger
         $userId = $this->pdo->quote($data['userId']);
         $eventName = $this->pdo->quote($event);
 
-        $this->pdo->exec("INSERT INTO `jira_events` SET `user_id` = {$userId}, `event` = {$eventName}, `data` = {$serializedData}");
+        $this->pdo->exec("INSERT INTO `jira_logs` SET `user_id` = {$userId}, `event` = {$eventName}, `data` = {$serializedData}");
     }
 
     private function logEventWithEmail($data, $event)
@@ -86,7 +84,7 @@ class JiraLogger
         $email = $this->pdo->quote($data['email']);
         $eventName = $this->pdo->quote($event);
 
-        $this->pdo->exec("INSERT INTO `jira_events` SET `email` = {$email}, `event` = {$eventName}, `data` = {$serializedData}");
+        $this->pdo->exec("INSERT INTO `jira_logs` SET `email` = {$email}, `event` = {$eventName}, `data` = {$serializedData}");
     }
 
     private function registerBillingListeners(EventManager $manager)
