@@ -3,6 +3,7 @@
 namespace CS\Users;
 
 use PDO,
+    EventManager\EventManager,
     Exception,
     CS\Models\User\UsersSystemNotes\UsersSystemNoteRecord;
 
@@ -84,7 +85,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -102,7 +103,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -120,7 +121,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -138,7 +139,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -156,7 +157,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -174,7 +175,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -192,7 +193,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -210,7 +211,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -228,7 +229,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -241,7 +242,7 @@ class UsersNotes
                 ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} expired")
                 ->save();
-                
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -259,7 +260,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -278,7 +279,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -296,11 +297,12 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
-    
-    public function licenseRebillPaymentFailed($licenseId, $userId = null) {
+
+    public function licenseRebillPaymentFailed($licenseId, $userId = null)
+    {
         $realUserId = $this->getUserId($userId);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
@@ -326,7 +328,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -349,7 +351,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -367,7 +369,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -385,7 +387,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -403,7 +405,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -421,7 +423,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -435,7 +437,7 @@ class UsersNotes
                 ->setContent("Support Ticket #{$ticketId} has been successfully sent");
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -451,7 +453,7 @@ class UsersNotes
                 ->setContent("Autorebill status change for subscription #{$licenseId} queued");
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -469,7 +471,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -487,7 +489,7 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -501,7 +503,7 @@ class UsersNotes
                 ->setContent("Found new module error {$moduleName} {$errorName}");
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
@@ -516,14 +518,14 @@ class UsersNotes
                 ->setContent("Fixed modules bug: [{$fixesList}]");
 
         $usersSystemNote->save();
-        
+
         $this->emitEvent($usersSystemNote);
     }
 
     private function emitEvent(UsersSystemNoteRecord $usersSystemNote)
     {
-        $eventManager = \EventManager::getInstance();
-        
+        $eventManager = EventManager::getInstance();
+
         $eventManager->emit('user-note-added', array(
             'userId' => $usersSystemNote->getUserId(),
             'userNoteId' => $usersSystemNote->getId(),

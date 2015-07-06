@@ -6,6 +6,7 @@ use PDO,
     IP,
     CS\Settings\GlobalSettings,
     CS\Mail\MailSender,
+    EventManager\EventManager,
     CS\Models\User\UserRecord,
     CS\Models\User\AuthLog\UserAuthLogRecord,
     CS\Models\User\Options\UserOptionRecord;
@@ -639,7 +640,7 @@ class UsersManager
             return;
         }
 
-        $manager = \EventManager::getInstance();
+        $manager = EventManager::getInstance();
 
         $manager->on('email-send', function($data) use ($pdo) {
             if (isset($data['userId'])) {

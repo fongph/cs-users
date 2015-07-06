@@ -2,6 +2,8 @@
 
 namespace CS\Users;
 
+use EventManager\EventManager;
+
 /**
  * Description of JiraLogger
  *
@@ -23,7 +25,7 @@ class JiraLogger
 
     public function registerListeners()
     {
-        $manager = \EventManager::getInstance();
+        $manager = EventManager::getInstance();
 
         $manager->on('email-sended', function($data) {
             if (!$data['system']) {
