@@ -42,7 +42,7 @@ class JiraLogger
         });
         
         $manager->on('user-deleted', function($data) {
-            $this->logEvent($data, 'user-deleted');
+            $this->logEventWithEmail($data, 'user-deleted');
         });
 
         $this->registerBillingListeners($manager);
