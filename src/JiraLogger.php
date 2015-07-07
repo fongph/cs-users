@@ -132,7 +132,7 @@ class JiraLogger
         });
 
         $manager->on('front-registration-completed', function($data) {
-            $this->logEvent($data, 'front-registration-completed');
+            $this->logEventWithEmail($data, 'front-registration-completed');
         });
 
         $manager->on('front-subscription-completed', function($data) {
@@ -152,7 +152,7 @@ class JiraLogger
         });
 
         $manager->on('front-registration-trial-completed', function($data) {
-            $this->logEvent($data, 'front-subscription-completed');
+            $this->logEvent($data, 'front-registration-trial-completed');
         });
     }
 
