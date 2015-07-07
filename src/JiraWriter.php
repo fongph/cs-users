@@ -104,13 +104,13 @@ class JiraWriter
                 ->customField(self::CUSTOM_FIELD_PROFILE_URL, $this->getUserProfileUrl($userId));
 
         if ($oldIssue->getCustomField(self::CUSTOM_FIELD_SOURCE) !== null) {
-            $source = $oldIssue->getCustomField(self::CUSTOM_FIELD_SOURCE)->getValue();
-            $newIssue->customField(self::CUSTOM_FIELD_SOURCE, $source);
+            $source = $oldIssue->getCustomField(self::CUSTOM_FIELD_SOURCE);
+            $newIssue->customField(self::CUSTOM_FIELD_SOURCE, $source['value']);
         }
 
         if ($oldIssue->getCustomField(self::CUSTOM_FIELD_MANUAL_SOURCE) !== null) {
-            $manualSource = $oldIssue->getCustomField(self::CUSTOM_FIELD_MANUAL_SOURCE)->getValue();
-            $newIssue->customField(self::CUSTOM_FIELD_MANUAL_SOURCE, $manualSource);
+            $manualSource = $oldIssue->getCustomField(self::CUSTOM_FIELD_MANUAL_SOURCE);
+            $newIssue->customField(self::CUSTOM_FIELD_MANUAL_SOURCE, $manualSource['value']);
         }
 
         $createdIssue = $newIssue->execute();
