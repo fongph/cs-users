@@ -131,7 +131,7 @@ class JiraLogger
     private function registerFrontListeners(EventManager $manager)
     {
         // Tickets creation
-        $manager->on('front-order-pending', function($data) {
+        $manager->on('front-order-pending', function($data) {//
             $this->logEvent($data, 'front-order-pending');
         });
 
@@ -143,16 +143,16 @@ class JiraLogger
             $this->logEvent($data, 'front-subscription-completed');
         });
 
-        $manager->on('front-contact-us-completed', function($data) {
-            $this->logEventWithEmail($data, 'front-subscription-completed');
+        $manager->on('front-contact-us-completed', function($data) {//
+            $this->logEventWithEmail($data, 'front-contact-us-completed');
         });
 
-        $manager->on('front-compatibility-completed', function($data) {
-            $this->logEventWithEmail($data, 'front-subscription-completed');
+        $manager->on('front-compatibility-completed', function($data) {//
+            $this->logEventWithEmail($data, 'front-compatibility-completed');
         });
 
-        $manager->on('front-carriers-completed', function($data) {
-            $this->logEventWithEmail($data, 'front-subscription-completed');
+        $manager->on('front-carriers-completed', function($data) {//
+            $this->logEventWithEmail($data, 'front-carriers-completed');
         });
 
         $manager->on('front-registration-trial-completed', function($data) {
