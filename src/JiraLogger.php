@@ -38,7 +38,7 @@ class JiraLogger
         });
 
         $manager->on('device-added', function($data) {
-            $this->logEvent($data, 'user-deleted');
+            $this->logEvent($data, 'device-added');
         });
         
         $manager->on('user-deleted', function($data) {
