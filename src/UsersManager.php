@@ -642,9 +642,9 @@ class UsersManager
 
         $manager = EventManager::getInstance();
 
-        $manager->on('email-send', function($data) use ($pdo) {
-            if (isset($data['user_id'])) {
-                self::logUserEmailSended($pdo, $data['user_id'], $data['type']);
+        $manager->on('email-sended', function($data) use ($pdo) {
+            if (isset($data['userId'])) {
+                self::logUserEmailSended($pdo, $data['userId'], $data['type']);
             }
         });
 
