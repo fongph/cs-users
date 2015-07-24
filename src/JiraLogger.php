@@ -129,9 +129,9 @@ class JiraLogger
 
         $manager->on('billing-order-canceled', function($data) {
             if (isset($data['userId'])) {
-                $this->logEvent($data, 'email-sended');
+                $this->logEvent($data, 'billing-order-canceled');
             } else {
-                $this->logEventWithEmail($data, 'email-sended');
+                $this->logEventWithEmail($data, 'billing-order-canceled');
             }
         });
     }
