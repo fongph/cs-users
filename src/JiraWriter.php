@@ -81,7 +81,8 @@ class JiraWriter
                         ->create(self::PROJECT_KEY, self::ISSUE_TYPE_ACTIVE)
                         ->field(Field::SUMMARY, $email)
                         ->customField(self::CUSTOM_FIELD_EMAIL, $email)
-                        ->customField(self::CUSTOM_FIELD_PROFILE_URL, $this->getUserProfileUrl($userId));
+                        ->customField(self::CUSTOM_FIELD_PROFILE_URL, $this->getUserProfileUrl($userId))
+                        ->customField(self::CUSTOM_FIELD_DEVICES, $this->getDevicesFieldValue($userId));
     }
 
     public function createNewPotentialIssue($email)
@@ -101,7 +102,8 @@ class JiraWriter
                 ->customField(self::CUSTOM_FIELD_EMAIL, $oldIssue->getCustomField(self::CUSTOM_FIELD_EMAIL))
                 ->customField(self::CUSTOM_FIELD_FIRST_NAME, $oldIssue->getCustomField(self::CUSTOM_FIELD_FIRST_NAME))
                 ->customField(self::CUSTOM_FIELD_LAST_NAME, $oldIssue->getCustomField(self::CUSTOM_FIELD_LAST_NAME))
-                ->customField(self::CUSTOM_FIELD_PROFILE_URL, $this->getUserProfileUrl($userId));
+                ->customField(self::CUSTOM_FIELD_PROFILE_URL, $this->getUserProfileUrl($userId))
+                ->customField(self::CUSTOM_FIELD_DEVICES, $this->getDevicesFieldValue($userId));
 
         if ($oldIssue->getCustomField(self::CUSTOM_FIELD_SOURCE) !== null) {
             $source = $oldIssue->getCustomField(self::CUSTOM_FIELD_SOURCE);
@@ -199,6 +201,40 @@ class JiraWriter
         return 0;
     }
 
+    public function getDevicesFieldValue($userId)
+    {
+        $hasActive = $this->hasActiveDevices($userId);
+        $hasDeleted = $this->hasDeletedDevices($userId);
+
+        if (!$hasActive && !$hasDeleted) {
+            return array(self::CUSTOM_FIELD_DEVICES_VALUE_NO_DEVICES);
+        }
+
+        $result = array();
+
+        if ($hasActive) {
+            $result[] = self::CUSTOM_FIELD_DEVICES_VALUE_ADDED_DEVICE;
+        }
+
+        if ($hasDeleted) {
+            $result[] = self::CUSTOM_FIELD_DEVICES_VALUE_DELETED_DEVICE;
+        }
+
+        return $result;
+    }
+
+    private function hasActiveDevices($userId)
+    {
+        $escapedUserId = $this->pdo->quote($userId);
+        return $this->pdo->query("SELECT id FROM `devices` WHERE `user_id` = {$escapedUserId} AND `deleted` = 0 LIMIT 1")->fetchColumn() !== false;
+    }
+
+    private function hasDeletedDevices($userId)
+    {
+        $escapedUserId = $this->pdo->quote($userId);
+        return $this->pdo->query("SELECT id FROM `devices` WHERE `user_id` = {$escapedUserId} AND `deleted` = 1 LIMIT 1")->fetchColumn() !== false;
+    }
+
     public function moneyForamt($value)
     {
         if ($value < 0) {
@@ -238,7 +274,7 @@ class JiraWriter
             return 'Android';
         }
 
-        return 'unknown';
+        return false;
     }
 
     public function buildLabelText($value)
@@ -258,7 +294,7 @@ class JiraWriter
             return $this->buildLabelText('Android ' . $version);
         }
 
-        return 'unknown';
+        return false;
     }
 
     public function updateDueDate($userId, $userEmail, Issue $issue)

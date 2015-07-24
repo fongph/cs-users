@@ -41,6 +41,10 @@ class JiraLogger
             $this->logEvent($data, 'device-added');
         });
         
+        $manager->on('device-deleted', function($data) {
+            $this->logEvent($data, 'device-deleted');
+        });
+        
         $manager->on('user-deleted', function($data) {
             $this->logEventWithEmail($data, 'user-deleted');
         });
@@ -113,6 +117,10 @@ class JiraLogger
             $this->logEvent($data, 'billing-rebill-failed');
         });
 
+        $manager->on('billing-license-added', function($data) {
+            $this->logEvent($data, 'billing-license-added');
+        });
+        
         // Tickets creation
 
         $manager->on('billing-order-completed', function($data) {
