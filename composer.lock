@@ -450,16 +450,16 @@
         },
         {
             "name": "rastor/jira-client",
-            "version": "0.3.2",
+            "version": "0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/oRastor/jira-client.git",
-                "reference": "e88c733ae72f5a7a38eb21074dc9f986c9d2517c"
+                "reference": "e74c2677967d3fd4e0b2ffd326f3767213e4277c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oRastor/jira-client/zipball/e88c733ae72f5a7a38eb21074dc9f986c9d2517c",
-                "reference": "e88c733ae72f5a7a38eb21074dc9f986c9d2517c",
+                "url": "https://api.github.com/repos/oRastor/jira-client/zipball/e74c2677967d3fd4e0b2ffd326f3767213e4277c",
+                "reference": "e74c2677967d3fd4e0b2ffd326f3767213e4277c",
                 "shasum": ""
             },
             "require": {
@@ -488,7 +488,7 @@
                 "jira",
                 "rest"
             ],
-            "time": "2015-07-24 08:04:19"
+            "time": "2015-07-24 09:15:53"
         },
         {
             "name": "react/promise",
