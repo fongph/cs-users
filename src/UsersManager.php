@@ -39,7 +39,7 @@ class UsersManager
     protected $sender;
     protected $loginAttempts = 5;
     protected $loginAttemptsPeriod = 300; // 5 min
-    
+
     /**
      *
      * @var boolean
@@ -616,6 +616,11 @@ class UsersManager
         $this->db->exec("DELETE FROM `users_system_notes` WHERE `user_id` = {$userId}");
         $this->db->exec("DELETE FROM `users` WHERE `id` = {$userId}");
         $this->db->commit();
+    }
+
+    public function getSessionManager()
+    {
+        return new SessionsManager($this->db);
     }
 
     /**
