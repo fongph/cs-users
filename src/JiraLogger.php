@@ -148,7 +148,7 @@ class JiraLogger
         });
 
         $manager->on('front-subscription-completed', function($data) {
-            $this->logEvent($data, 'front-subscription-completed');
+            $this->logEventWithEmail($data, 'front-subscription-completed');
         });
 
         $manager->on('front-contact-us-completed', function($data) {//
