@@ -31,7 +31,7 @@ class SessionsManager
         $lifeTimeValue = $this->pdo->quote(time());
         $sessionId = $this->pdo->quote($token);
 
-        return $this->pdo->query("SELECT `user_id` FROM `users_auth_sessions` WHERE `session_id` = {$sessionId}, `user_agent` = {$userAgentString}, `lifetime` > {$lifeTimeValue}")->fetchColumn();
+        return $this->pdo->query("SELECT `user_id` FROM `users_auth_sessions` WHERE `session_id` = {$sessionId} AND `user_agent` = {$userAgentString} AND `lifetime` > {$lifeTimeValue}")->fetchColumn();
     }
 
     public function create($siteId, $email, $password, $userAgent, $lifeTime = self::DEFAULT_LIFE_TIME)
