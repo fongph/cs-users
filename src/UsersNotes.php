@@ -518,13 +518,15 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
-    public function licenseSubscriptionReset($licenseId, $userId = null)
+    public function licenseSubscriptionReset($licenseId, $userId = null, $adminId = null)
     {
         $realUserId = $this->getUserId($userId);
+        $realAdminId = $this->getAdminId($adminId);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
+                ->setAdminId($realAdminId)
                 ->setContent("Subscription #{$licenseId} was restored")
                 ->save();
 
