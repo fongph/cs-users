@@ -245,6 +245,42 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
+    
+    public function licenseFreeDropped($parenLicenceId, $freeLicenseId, $deviceId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Free Subscription #{$freeLicenseId} (parent subscription #{$parenLicenceId}) dropped from device #{$deviceId}");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
+    public function licenseFreeDroppedEmptyDevice($parenLicenceId, $freeLicenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Free Subscription #{$freeLicenseId} (parent subscription #{$parenLicenceId}) dropped");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
 
     public function licenseDropped($licenseId, $deviceId, $userId = null)
     {

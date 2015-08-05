@@ -130,6 +130,13 @@ class UsersManager
         return $this;
     }
 
+    public function hasUserOption($userId, $option, $scope = null) {
+        $escapedUserId = $this->getDb()->quote($userId);
+        $escapedOption = $this->getDb()->quote($option);
+        
+        return $this->getDb()->query("SELECT `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption} LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    }
+    
     public function getUserOption($userId, $option, $scope = null)
     {
         $escapedUserId = $this->getDb()->quote($userId);
