@@ -245,6 +245,42 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
+    
+    public function licenseFreeDropped($parenLicenceId, $freeLicenseId, $deviceId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Free Subscription #{$freeLicenseId} (parent subscription #{$parenLicenceId}) dropped from device #{$deviceId}");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
+    public function licenseFreeDroppedEmptyDevice($parenLicenceId, $freeLicenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Free Subscription #{$freeLicenseId} (parent subscription #{$parenLicenceId}) dropped");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
 
     public function licenseDropped($licenseId, $deviceId, $userId = null)
     {
@@ -518,6 +554,54 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
+    public function licenseSubscriptionReset($licenseId, $userId = null, $adminId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        $realAdminId = $this->getAdminId($adminId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setAdminId($realAdminId)
+                ->setContent("Subscription #{$licenseId} was restored")
+                ->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
+    public function licenseAutorebillQueued($licenseId, $userId = null, $adminId = null) {
+        $realUserId = $this->getUserId($userId);
+        $realAdminId = $this->getAdminId($adminId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setAdminId($realAdminId)
+                ->setContent("Autorebill status change for subscription #{$licenseId} queued");
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
+    public function licenseDroppedNoDevice($licenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription #{$licenseId} dropped (no device)");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
     private function emitEvent(UsersSystemNoteRecord $usersSystemNote)
     {
         $eventManager = EventManager::getInstance();
