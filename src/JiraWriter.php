@@ -163,7 +163,7 @@ class JiraWriter
 
     public function getNotProcessedRecords()
     {
-        return $this->pdo->query("SELECT *, UNIX_TIMESTAMP(`created_at`) as time FROM `jira_logs` WHERE `processed` = 0")->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->pdo->query("SELECT *, UNIX_TIMESTAMP(`created_at`) as time FROM `jira_logs` WHERE `processed` = 0 ORDER BY `event`")->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function setLogRecordProcessed($id)
