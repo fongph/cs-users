@@ -52,6 +52,7 @@ class JiraLogger
         $this->registerBillingListeners($manager);
         $this->registerFrontListeners($manager);
         $this->registerCpListeners($manager);
+        $this->registerApiListeners($manager);
     }
 
     private function logEmailSended($data)
@@ -102,6 +103,17 @@ class JiraLogger
             $this->logEvent($data, 'cp-support-completed');
         });
     }
+    
+    private function registerApiListeners(EventManager $manager)
+    {
+        $manager->on('device-application-deleted', function($data) {
+            $this->logEvent($data, 'device-application-deleted');
+        });
+        
+        $manager->on('device-admin-rights-removed', function($data) {
+            $this->logEvent($data, 'device-admin-rights-removed');
+        });
+    }
 
     private function registerBillingListeners(EventManager $manager)
     {
@@ -139,6 +151,14 @@ class JiraLogger
             } else {
                 $this->logEventWithEmail($data, 'billing-order-canceled');
             }
+        });
+        
+        $manager->on('billing-autorebill-enabled', function($data) {
+            $this->logEvent($data, 'billing-autorebill-enabled');
+        });
+        
+        $manager->on('billing-autorebill-disabled', function($data) {
+            $this->logEvent($data, 'billing-autorebill-disabled');
         });
         
         $manager->on('license-added', function($data) {
