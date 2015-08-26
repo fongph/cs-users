@@ -40,17 +40,18 @@ class JiraLogger
         $manager->on('device-added', function($data) {
             $this->logEvent($data, 'device-added');
         });
-        
+
         $manager->on('device-deleted', function($data) {
             $this->logEvent($data, 'device-deleted');
         });
-        
+
         $manager->on('user-deleted', function($data) {
             $this->logEventWithEmail($data, 'user-deleted');
         });
 
         $this->registerBillingListeners($manager);
         $this->registerFrontListeners($manager);
+        $this->registerCpListeners($manager);
     }
 
     private function logEmailSended($data)
@@ -95,6 +96,13 @@ class JiraLogger
         $this->pdo->exec("INSERT INTO `jira_logs` SET `email` = {$email}, `event` = {$eventName}, `data` = {$serializedData}");
     }
 
+    private function registerCpListeners(EventManager $manager)
+    {
+        $manager->on('cp-support-completed', function($data) {
+            $this->logEvent($data, 'cp-support-completed');
+        });
+    }
+
     private function registerBillingListeners(EventManager $manager)
     {
         $manager->on('billing-sale', function($data) {
@@ -120,8 +128,6 @@ class JiraLogger
         $manager->on('billing-license-added', function($data) {
             $this->logEvent($data, 'billing-license-added');
         });
-        
-        // Tickets creation
 
         $manager->on('billing-order-completed', function($data) {
             $this->logEvent($data, 'billing-order-completed');
@@ -133,6 +139,26 @@ class JiraLogger
             } else {
                 $this->logEventWithEmail($data, 'billing-order-canceled');
             }
+        });
+        
+        $manager->on('license-added', function($data) {
+            $this->logEvent($data, 'license-added');
+        });
+        
+        $manager->on('license-dropped', function($data) {
+            $this->logEvent($data, 'license-dropped');
+        });
+        
+        $manager->on('license-assigned', function($data) {
+            $this->logEvent($data, 'license-assigned');
+        });
+        
+        $manager->on('license-unassigned', function($data) {
+            $this->logEvent($data, 'license-unassigned');
+        });
+        
+        $manager->on('license-restored', function($data) {
+            $this->logEvent($data, 'license-restored');
         });
     }
 
