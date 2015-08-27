@@ -33,6 +33,14 @@ class JiraWriter
     const CUSTOM_FIELD_OS_VERSION = 10024;
     const CUSTOM_FIELD_MANUAL_SOURCE = 10027;
     const CUSTOM_FIELD_PROBLEMS = 10014;
+    const CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS = 'Available Subscription';
+    const CUSTOM_FIELD_PROBLEMS_DELETED_DEVICE = 'Deleted device';
+    const CUSTOM_FIELD_PROBLEMS_CANCELED_AUTOREBILL = 'Canceled Autorebill';
+    const CUSTOM_FIELD_PROBLEMS_ICLOUD_PROBLEM = 'iCloud Problem';
+    const CUSTOM_FIELD_PROBLEMS_OLD_LAST_LOGIN = 'Old Last Login';
+    const CUSTOM_FIELD_PROBLEMS_OLD_LAST_SYNCHRONIZATION = 'Old Last Synch';
+    const CUSTOM_FIELD_PROBLEMS_APPLICATION_DELETED = 'App Deleted';
+    const CUSTOM_FIELD_PROBLEMS_ADMIN_RIGHTS_REMOVED = 'Admin Rights Removed';
 
     private $sourceValues = array(
         'billing-order-completed' => 10012,
@@ -233,6 +241,97 @@ class JiraWriter
     {
         $escapedUserId = $this->pdo->quote($userId);
         return $this->pdo->query("SELECT id FROM `devices` WHERE `user_id` = {$escapedUserId} AND `deleted` = 1 LIMIT 1")->fetchColumn() !== false;
+    }
+
+    private function hasAvailableLicenses($userId)
+    {
+        $escapedUserId = $this->pdo->quote($userId);
+        $status = $this->pdo->quote(\CS\Models\License\LicenseRecord::STATUS_AVAILABLE);
+        return $this->pdo->query("SELECT `id` FROM `licenses` WHERE `user_id` = {$escapedUserId} AND `status` = {$status} LIMIT 1")->fetchColumn() !== false;
+    }
+
+    private function hasCanceledLicenseSubscriptionsAutorebill($userId)
+    {
+        $escapedUserId = $this->pdo->quote($userId);
+
+        $statusAvailable = $this->pdo->quote(\CS\Models\License\LicenseRecord::STATUS_AVAILABLE);
+        $statusActive = $this->pdo->quote(\CS\Models\License\LicenseRecord::STATUS_ACTIVE);
+        $paymentMethodFastSpring = $this->pdo->quote(\CS\Models\Order\OrderRecord::PAYMENT_METHOD_FASTSPRING);
+
+        return $this->pdo->query("SELECT 
+                                        l.`id` 
+                                    FROM `licenses` l
+                                    INNER JOIN `subscriptions` s ON s.`license_id` = l.`id`
+                                    WHERE 
+                                        l.`user_id` = {$escapedUserId} AND
+                                        l.`status` IN ({$statusAvailable}, {$statusActive}) AND
+                                        s.`payment_method` = {$paymentMethodFastSpring} AND
+                                        s.`auto` = 0
+                                    LIMIT 1")->fetchColumn() !== false;
+    }
+
+    public function hasDevicesWithDeletedApplication($userId)
+    {
+        $escapedUserId = $this->pdo->quote($userId);
+        return $this->pdo->query("SELECT `id` FROM `devices` WHERE `user_id` = {$escapedUserId} AND `application_deleted` = 1 LIMIT 1")->fetchColumn() !== false;
+    }
+    
+    public function hasDevicesWithAdminRightsDeleted($userId)
+    {
+        $escapedUserId = $this->pdo->quote($userId);
+        return $this->pdo->query("SELECT `id` FROM `devices` WHERE `user_id` = {$escapedUserId} AND `admin_rights_deleted` = 1 LIMIT 1")->fetchColumn() !== false;
+    }
+
+    public function updateCanceledAutorebillProblem($userId, Issue $issue)
+    {
+        if ($this->hasCanceledLicenseSubscriptionsAutorebill($userId)) {
+            $issue->update()
+                    ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_CANCELED_AUTOREBILL)
+                    ->execute();
+        } else {
+            $issue->update()
+                    ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_CANCELED_AUTOREBILL)
+                    ->execute();
+        }
+    }
+
+    public function updateAvailableLicensesProblem($userId, Issue $issue)
+    {
+        if ($this->hasAvailableLicenses($userId)) {
+            $issue->update()
+                    ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS)
+                    ->execute();
+        } else {
+            $issue->update()
+                    ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS)
+                    ->execute();
+        }
+    }
+    
+    public function updateApplicationDeletedProblem($userId, Issue $issue)
+    {
+        if ($this->hasDevicesWithDeletedApplication($userId)) {
+            $issue->update()
+                    ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_APPLICATION_DELETED)
+                    ->execute();
+        } else {
+            $issue->update()
+                    ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_APPLICATION_DELETED)
+                    ->execute();
+        }
+    }
+    
+    public function updateAdminRightsRemovedProblem($userId, Issue $issue)
+    {
+        if ($this->hasDevicesWithAdminRightsDeleted($userId)) {
+            $issue->update()
+                    ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_ADMIN_RIGHTS_REMOVED)
+                    ->execute();
+        } else {
+            $issue->update()
+                    ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_ADMIN_RIGHTS_REMOVED)
+                    ->execute();
+        }
     }
 
     public function moneyForamt($value)
