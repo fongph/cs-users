@@ -180,6 +180,10 @@ class JiraLogger
         $manager->on('license-restored', function($data) {
             $this->logEvent($data, 'license-restored');
         });
+        
+        $manager->on('license-expired', function($data) {
+            $this->logEvent($data, 'license-expired');
+        });
     }
 
     private function registerFrontListeners(EventManager $manager)
