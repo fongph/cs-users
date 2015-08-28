@@ -287,7 +287,7 @@ class JiraWriter
         $escapedUserId = $this->pdo->quote($userId);
         
         return $this->pdo->query("SELECT
-                                        `id`
+                                        d.`id`
                                     FROM `devices` d
                                     INNER JOIN `devices_icloud` di ON di.`id` = d.`id`
                                     WHERE
