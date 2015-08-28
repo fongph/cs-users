@@ -273,15 +273,43 @@ class JiraWriter
     public function hasDevicesWithDeletedApplication($userId)
     {
         $escapedUserId = $this->pdo->quote($userId);
-        return $this->pdo->query("SELECT `id` FROM `devices` WHERE `user_id` = {$escapedUserId} AND `application_deleted` = 1 LIMIT 1")->fetchColumn() !== false;
+        return $this->pdo->query("SELECT `id` FROM `devices` WHERE `user_id` = {$escapedUserId} AND `application_deleted` = 1 AND `deleted` = 0 LIMIT 1")->fetchColumn() !== false;
     }
     
     public function hasDevicesWithAdminRightsDeleted($userId)
     {
         $escapedUserId = $this->pdo->quote($userId);
-        return $this->pdo->query("SELECT `id` FROM `devices` WHERE `user_id` = {$escapedUserId} AND `admin_rights_deleted` = 1 LIMIT 1")->fetchColumn() !== false;
+        return $this->pdo->query("SELECT `id` FROM `devices` WHERE `user_id` = {$escapedUserId} AND `admin_rights_deleted` = 1 AND `deleted` = 0 LIMIT 1")->fetchColumn() !== false;
+    }
+    
+    public function hasDevicesWithiCloudError($userId)
+    {
+        $escapedUserId = $this->pdo->quote($userId);
+        
+        return $this->pdo->query("SELECT
+                                        `id`
+                                    FROM d `devices`
+                                    INNER JOIN `devices_icloud` di ON di.`id` = d.`id`
+                                    WHERE
+                                        d.`user_id` = {$escapedUserId} AND
+                                        d.`deleted` = 0 AND
+                                        di.`last_error` > 0
+                                    LIMIT 1")->fetchColumn() !== false;
     }
 
+    public function updateiCloudProblem($userId, Issue $issue)
+    {
+        if ($this->hasDevicesWithiCloudError($userId)) {
+            $issue->update()
+                    ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_ICLOUD_PROBLEM)
+                    ->execute();
+        } else {
+            $issue->update()
+                    ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_ICLOUD_PROBLEM)
+                    ->execute();
+        }
+    }
+    
     public function updateCanceledAutorebillProblem($userId, Issue $issue)
     {
         if ($this->hasCanceledLicenseSubscriptionsAutorebill($userId)) {
