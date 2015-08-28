@@ -299,11 +299,11 @@ class JiraWriter
     {
         if ($this->hasAvailableLicenses($userId)) {
             $issue->update()
-                    ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS)
+                    ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS)
                     ->execute();
         } else {
             $issue->update()
-                    ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS)
+                    ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS)
                     ->execute();
         }
     }
