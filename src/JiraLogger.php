@@ -44,6 +44,10 @@ class JiraLogger
         $manager->on('device-deleted', function($data) {
             $this->logEvent($data, 'device-deleted');
         });
+        
+        $manager->on('device-icloud-backup-processed', function($data) {
+            $this->logEvent($data, 'device-icloud-backup-processed');
+        });
 
         $manager->on('user-deleted', function($data) {
             $this->logEventWithEmail($data, 'user-deleted');
