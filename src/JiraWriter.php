@@ -288,7 +288,7 @@ class JiraWriter
         
         return $this->pdo->query("SELECT
                                         `id`
-                                    FROM d `devices`
+                                    FROM `devices` d
                                     INNER JOIN `devices_icloud` di ON di.`id` = d.`id`
                                     WHERE
                                         d.`user_id` = {$escapedUserId} AND
