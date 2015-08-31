@@ -205,17 +205,6 @@ class JiraWriter
         if ($minTime > 0) {
             return $minTime;
         }
-        
-        $maxExpirationTime = $this->pdo->query("SELECT 
-                                MAX(l.`expiration_date`) 
-                            FROM `licenses` l
-                            WHERE
-                                l.`status` = 'inactive' AND
-                                l.`user_id` = {$escapedUserId}")->fetchColumn();
-                                
-        if ($maxExpirationTime > 0) {
-            return $maxExpirationTime;
-        }
 
         return 0;
     }
@@ -435,12 +424,12 @@ class JiraWriter
         return false;
     }
 
-    public function updateDueDate($userId, $userEmail, Issue $issue)
+    public function updateDueDate($userId, $userEmail, Issue $issue, $default = 0)
     {
         $timestamp = $this->getUserDueDateTimestamp($userId);
 
-        if ($timestamp > 0) {
-            $summary = $userEmail . ' - ' . date('d.m.Y', $timestamp);
+        if ($timestamp > 0 || $default > 0) {
+            $summary = $userEmail . ' - ' . date('d.m.Y', $timestamp > 0 ? $timestamp : $default);
 
             $issue->update()
                     ->field(Field::SUMMARY, $summary)
