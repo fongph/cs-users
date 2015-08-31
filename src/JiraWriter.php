@@ -205,6 +205,17 @@ class JiraWriter
         if ($minTime > 0) {
             return $minTime;
         }
+        
+        $maxExpirationTime = $this->pdo->query("SELECT 
+                                MAX(l.`expiration_date`) 
+                            FROM `licenses` l
+                            WHERE
+                                l.`status` = 'inactive' AND
+                                l.`user_id` = {$escapedUserId}")->fetchColumn();
+                                
+        if ($maxExpirationTime > 0) {
+            return $maxExpirationTime;
+        }
 
         return 0;
     }
