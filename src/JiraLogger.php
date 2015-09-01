@@ -52,6 +52,10 @@ class JiraLogger
         $manager->on('user-deleted', function($data) {
             $this->logEventWithEmail($data, 'user-deleted');
         });
+        
+        $manager->on('user-custom-password-saved', function($data) {
+            $this->logEvent($data, 'user-custom-password-saved');
+        });
 
         $this->registerBillingListeners($manager);
         $this->registerFrontListeners($manager);
@@ -105,6 +109,10 @@ class JiraLogger
     {
         $manager->on('cp-support-completed', function($data) {
             $this->logEvent($data, 'cp-support-completed');
+        });
+        
+        $manager->on('cp-lost-password-completed', function($data) {
+            $this->logEvent($data, 'cp-lost-password-completed');
         });
     }
     

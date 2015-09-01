@@ -41,6 +41,10 @@ class JiraWriter
     const CUSTOM_FIELD_PROBLEMS_OLD_LAST_SYNCHRONIZATION = 'Old Last Synch';
     const CUSTOM_FIELD_PROBLEMS_APPLICATION_DELETED = 'App Deleted';
     const CUSTOM_FIELD_PROBLEMS_ADMIN_RIGHTS_REMOVED = 'Admin Rights Removed';
+    const TRANSITION_ACTIVE_TO_NEW = 231;
+    const TRANSITION_ACTIVE_TO_EXPIRED = 251;
+    const TRANSITION_ACTIVE_TO_REFUND = 241;
+    const TRANSITION_POTENTIAL_TO_NEW = 101;
 
     private $sourceValues = array(
         'billing-order-completed' => 10012,
@@ -275,17 +279,17 @@ class JiraWriter
         $escapedUserId = $this->pdo->quote($userId);
         return $this->pdo->query("SELECT `id` FROM `devices` WHERE `user_id` = {$escapedUserId} AND `application_deleted` = 1 AND `deleted` = 0 LIMIT 1")->fetchColumn() !== false;
     }
-    
+
     public function hasDevicesWithAdminRightsDeleted($userId)
     {
         $escapedUserId = $this->pdo->quote($userId);
         return $this->pdo->query("SELECT `id` FROM `devices` WHERE `user_id` = {$escapedUserId} AND `admin_rights_deleted` = 1 AND `deleted` = 0 LIMIT 1")->fetchColumn() !== false;
     }
-    
+
     public function hasDevicesWithiCloudError($userId)
     {
         $escapedUserId = $this->pdo->quote($userId);
-        
+
         return $this->pdo->query("SELECT
                                         d.`id`
                                     FROM `devices` d
@@ -309,7 +313,7 @@ class JiraWriter
                     ->execute();
         }
     }
-    
+
     public function updateCanceledAutorebillProblem($userId, Issue $issue)
     {
         if ($this->hasCanceledLicenseSubscriptionsAutorebill($userId)) {
@@ -335,7 +339,7 @@ class JiraWriter
                     ->execute();
         }
     }
-    
+
     public function updateApplicationDeletedProblem($userId, Issue $issue)
     {
         if ($this->hasDevicesWithDeletedApplication($userId)) {
@@ -348,7 +352,7 @@ class JiraWriter
                     ->execute();
         }
     }
-    
+
     public function updateAdminRightsRemovedProblem($userId, Issue $issue)
     {
         if ($this->hasDevicesWithAdminRightsDeleted($userId)) {
@@ -440,6 +444,37 @@ class JiraWriter
                     ->field(Field::DUE_DATE, null)
                     ->execute();
         }
+    }
+
+    public function setStatusNew(Issue $issue)
+    {
+        if ($issue->getIssueType()->getName() === JiraWriter::ISSUE_TYPE_ACTIVE) {
+            $transitionId = self::TRANSITION_ACTIVE_TO_NEW;
+        } elseif ($issue->getIssueType()->getName() === JiraWriter::ISSUE_TYPE_POTENTIAL) {
+            $transitionId = self::TRANSITION_POTENTIAL_TO_NEW;
+        } else {
+            throw new Exception("Not supported issue type");
+        }
+
+        $issue->transition()->execute($transitionId);
+    }
+
+    public function setStatusRefund(Issue $issue)
+    {
+        if ($issue->getIssueType()->getName() !== JiraWriter::ISSUE_TYPE_ACTIVE) {
+            throw new Exception("Not supported issue type");
+        }
+
+        $issue->transition()->execute(self::TRANSITION_ACTIVE_TO_REFUND);
+    }
+
+    public function setStatusExpired(Issue $issue)
+    {
+        if ($issue->getIssueType()->getName() !== JiraWriter::ISSUE_TYPE_ACTIVE) {
+            throw new Exception("Not supported issue type");
+        }
+
+        $issue->transition()->execute(self::TRANSITION_ACTIVE_TO_EXPIRED);
     }
 
 }
