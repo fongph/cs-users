@@ -253,6 +253,14 @@ class JiraWriter
         $status = $this->pdo->quote(\CS\Models\License\LicenseRecord::STATUS_AVAILABLE);
         return $this->pdo->query("SELECT `id` FROM `licenses` WHERE `user_id` = {$escapedUserId} AND `status` = {$status} LIMIT 1")->fetchColumn() !== false;
     }
+    
+    public function hasAliveLicenses($userId)
+    {
+        $escapedUserId = $this->pdo->quote($userId);
+        $statusAvailable = $this->pdo->quote(\CS\Models\License\LicenseRecord::STATUS_AVAILABLE);
+        $statusActive = $this->pdo->quote(\CS\Models\License\LicenseRecord::STATUS_ACTIVE);
+        return $this->pdo->query("SELECT `id` FROM `licenses` WHERE `user_id` = {$escapedUserId} AND (`status` = {$statusAvailable} OR `status` = {$statusActive}) LIMIT 1")->fetchColumn() !== false;
+    }
 
     private function hasCanceledLicenseSubscriptionsAutorebill($userId)
     {
