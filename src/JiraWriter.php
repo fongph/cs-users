@@ -450,8 +450,12 @@ class JiraWriter
     {
         $timestamp = $this->getUserDueDateTimestamp($userId);
 
-        if ($timestamp > 0 || $default > 0) {
-            $summary = $userEmail . ' - ' . date('d.m.Y', $timestamp > 0 ? $timestamp : $default);
+        if ($timestamp == 0) {
+            $timestamp = $default;
+        }
+        
+        if ($timestamp > 0) {
+            $summary = $userEmail . ' - ' . date('d.m.Y', $timestamp);
 
             $issue->update()
                     ->field(Field::SUMMARY, $summary)
