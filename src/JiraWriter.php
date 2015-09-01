@@ -307,6 +307,8 @@ class JiraWriter
             $issue->update()
                     ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_ICLOUD_PROBLEM)
                     ->execute();
+            
+            $this->setStatusNew($issue);
         } else {
             $issue->update()
                     ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_ICLOUD_PROBLEM)
@@ -320,6 +322,8 @@ class JiraWriter
             $issue->update()
                     ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_CANCELED_AUTOREBILL)
                     ->execute();
+            
+            $this->setStatusNew($issue);
         } else {
             $issue->update()
                     ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_CANCELED_AUTOREBILL)
@@ -333,6 +337,8 @@ class JiraWriter
             $issue->update()
                     ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS)
                     ->execute();
+            
+            $this->setStatusNew($issue);
         } else {
             $issue->update()
                     ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_AVAILABLE_SUBSCRIPTIONS)
@@ -346,6 +352,8 @@ class JiraWriter
             $issue->update()
                     ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_APPLICATION_DELETED)
                     ->execute();
+            
+            $this->setStatusNew($issue);
         } else {
             $issue->update()
                     ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_APPLICATION_DELETED)
@@ -359,6 +367,8 @@ class JiraWriter
             $issue->update()
                     ->customFieldAdd(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_ADMIN_RIGHTS_REMOVED)
                     ->execute();
+            
+            $this->setStatusNew($issue);
         } else {
             $issue->update()
                     ->customFieldRemove(JiraWriter::CUSTOM_FIELD_PROBLEMS, JiraWriter::CUSTOM_FIELD_PROBLEMS_ADMIN_RIGHTS_REMOVED)
