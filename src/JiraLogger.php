@@ -112,7 +112,7 @@ class JiraLogger
         });
         
         $manager->on('cp-lost-password-completed', function($data) {
-            $this->logEvent($data, 'cp-lost-password-completed');
+            $this->logEventWithEmail($data, 'cp-lost-password-completed');
         });
     }
     
