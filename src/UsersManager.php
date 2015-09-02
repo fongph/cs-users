@@ -520,7 +520,7 @@ class UsersManager
     }
 
     //@TODO: add transactions support
-    public function createUser($siteId, $email, $name = '')
+    public function createUser($siteId, $email, $name = '', $sendMail = true)
     {
         if ($this->isUser($siteId, $email)) {
             throw new UserAlreadyExistsException("User with this login already exists on this site!");
@@ -537,12 +537,14 @@ class UsersManager
                 ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
 
-        $this->getSender()
-                ->setUserId($userRecord->getId())
-                ->sendRegistrationSuccessWithPassword($email, $email, $password);
+        if($sendMail)
+            $this->getSender()
+                    ->setUserId($userRecord->getId())
+                    ->sendRegistrationSuccessWithPassword($email, $email, $password);
 
         return $userRecord->getId();
     }
+    
 
     // FreeTrial
     public function createUserFreeTrial($siteId, $email, $name)
