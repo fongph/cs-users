@@ -545,6 +545,21 @@ class UsersManager
         return $userRecord->getId();
     }
     
+    
+    // affiliates
+    public function getAffiliateId( $affId ) {
+        if(empty($affId)) return false;
+        $affId  = $this->db->quote($affId );
+
+        $data = $this->db->query("SELECT
+                                        *
+                                    FROM `affiliates`
+                                    WHERE
+                                        `aff_id` = {$affId}
+                                    LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+                                        
+        return $data;
+    }
 
     // FreeTrial
     public function createUserFreeTrial($siteId, $email, $name)
