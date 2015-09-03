@@ -545,6 +545,22 @@ class UsersManager
         return $userRecord->getId();
     }
     
+    public function updateUserPassword($id) {
+        $password = substr($this->getRandomString(), 0, 8);
+        $emailConfirmHash = $this->getRandomString('confirm');
+        // $this->setUserPassword($id, $password);
+        $userRecord = new UserRecord($this->db);
+        $userRecord->load($id);
+        $userRecord->setPassword($this->getPasswordHash($password))
+                 ->setEmailConfirmHash($emailConfirmHash)
+                ->save();
+        
+        $this->getSender()
+                ->setUserId($userRecord->getId())
+                ->sendRegistrationSuccessWithPassword($userRecord->getLogin(), $userRecord->getLogin(), $password);
+        
+        return $userRecord->getId();
+    }
     
     // affiliates
     public function getAffiliateId( $affId ) {
