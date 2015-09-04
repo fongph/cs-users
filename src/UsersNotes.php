@@ -12,6 +12,7 @@ class UsersNotes
 
     const TYPE_SYSTEM = 'sys';
     const TYPE_AUTH = 'auth';
+    const DATE_FORMAT = 'd-m-Y';
 
     /**
      *
@@ -205,6 +206,47 @@ class UsersNotes
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
                 ->setContent("Subscription #{$licenseId} added");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
+    public function licenseAddedCustom($licenseId, $name, $lifetime, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $date = date(self::DATE_FORMAT, $lifetime);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("\"{$name}\" subscription #{$licenseId} with expiry date {$date} was added");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
+    public function licenseUpdated($licenseId, $oldLifetime, $newLifetime, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $oldDate = date(self::DATE_FORMAT, $oldLifetime);
+        $newDate = date(self::DATE_FORMAT, $newLifetime);
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Expiry date for subscription #{$licenseId} was changed from {$oldDate} to {$newDate}");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
