@@ -520,7 +520,7 @@ class UsersManager
     }
 
     //@TODO: add transactions support
-    public function createUser($siteId, $email, $name = '')
+    public function createUser($siteId, $email, $name = '', $sendMail = true)
     {
         if ($this->isUser($siteId, $email)) {
             throw new UserAlreadyExistsException("User with this login already exists on this site!");
@@ -537,11 +537,44 @@ class UsersManager
                 ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
 
-        $this->getSender()
-                ->setUserId($userRecord->getId())
-                ->sendRegistrationSuccessWithPassword($email, $email, $password);
+        if($sendMail)
+            $this->getSender()
+                    ->setUserId($userRecord->getId())
+                    ->sendRegistrationSuccessWithPassword($email, $email, $password);
 
         return $userRecord->getId();
+    }
+    
+    public function updateUserPassword($id) {
+        $password = substr($this->getRandomString(), 0, 8);
+        $emailConfirmHash = $this->getRandomString('confirm');
+        // $this->setUserPassword($id, $password);
+        $userRecord = new UserRecord($this->db);
+        $userRecord->load($id);
+        $userRecord->setPassword($this->getPasswordHash($password))
+                 ->setEmailConfirmHash($emailConfirmHash)
+                ->save();
+        
+        $this->getSender()
+                ->setUserId($userRecord->getId())
+                ->sendRegistrationSuccessWithPassword($userRecord->getLogin(), $userRecord->getLogin(), $password);
+        
+        return $userRecord->getId();
+    }
+    
+    // affiliates
+    public function getAffiliateId( $affId ) {
+        if(empty($affId)) return false;
+        $affId  = $this->db->quote($affId );
+
+        $data = $this->db->query("SELECT
+                                        *
+                                    FROM `affiliates`
+                                    WHERE
+                                        `aff_id` = {$affId}
+                                    LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+                                        
+        return $data;
     }
 
     // FreeTrial
