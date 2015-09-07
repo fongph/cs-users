@@ -41,6 +41,10 @@ class JiraWriter
     const CUSTOM_FIELD_PROBLEMS_OLD_LAST_SYNCHRONIZATION = 'Old Last Synch';
     const CUSTOM_FIELD_PROBLEMS_APPLICATION_DELETED = 'App Deleted';
     const CUSTOM_FIELD_PROBLEMS_ADMIN_RIGHTS_REMOVED = 'Admin Rights Removed';
+    const CUSTOM_FIELD_USER_JOURNEY = 10032;
+    const CUSTOM_FIELD_USER_JOURNEY_PRE_SALE = 'Pre-Sale Request';
+    const CUSTOM_FIELD_USER_JOURNEY_TRIAL = 'Trial';
+    const CUSTOM_FIELD_USER_JOURNEY_SALE = 'Sale';
     const TRANSITION_ACTIVE_TO_NEW = 231;
     const TRANSITION_ACTIVE_TO_EXPIRED = 251;
     const TRANSITION_ACTIVE_TO_REFUND = 241;
@@ -115,7 +119,8 @@ class JiraWriter
                 ->customField(self::CUSTOM_FIELD_FIRST_NAME, $oldIssue->getCustomField(self::CUSTOM_FIELD_FIRST_NAME))
                 ->customField(self::CUSTOM_FIELD_LAST_NAME, $oldIssue->getCustomField(self::CUSTOM_FIELD_LAST_NAME))
                 ->customField(self::CUSTOM_FIELD_PROFILE_URL, $this->getUserProfileUrl($userId))
-                ->customField(self::CUSTOM_FIELD_DEVICES, $this->getDevicesFieldValue($userId));
+                ->customField(self::CUSTOM_FIELD_DEVICES, $this->getDevicesFieldValue($userId))
+                ->customFieldAdd(self::CUSTOM_FIELD_USER_JOURNEY, self::CUSTOM_FIELD_USER_JOURNEY_PRE_SALE);
 
         if ($oldIssue->getCustomField(self::CUSTOM_FIELD_SOURCE) !== null) {
             $source = $oldIssue->getCustomField(self::CUSTOM_FIELD_SOURCE);
