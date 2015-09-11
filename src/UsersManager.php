@@ -571,7 +571,7 @@ class UsersManager
                                         *
                                     FROM `affiliates`
                                     WHERE
-                                        `aff_id` = {$affId}
+                                        `id` = {$affId}
                                     LIMIT 1")->fetch(PDO::FETCH_ASSOC);
                                         
         return $data;
