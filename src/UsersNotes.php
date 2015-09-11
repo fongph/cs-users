@@ -89,6 +89,28 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
+    
+    public function deviceDuplicated($deviceId, $accounts, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        foreach ($accounts as $key => $value) {
+            $accounts[$key] = '#' . $value;
+        }
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device was previosly connected to accounts: " . implode(', ', $accounts));
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    } 
 
     public function deviceDeleted($deviceId, $userId = null)
     {
