@@ -101,7 +101,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Device was previosly connected to accounts: " . implode(', ', $accounts));
+                ->setContent("Device #{$deviceId} was previosly connected to accounts: " . implode(', ', $accounts));
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
