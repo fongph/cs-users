@@ -595,8 +595,8 @@ class UsersNotes
 
         $errors = array("Generic error: {$lastError}");
         foreach ($moduleErrors as $name => $value) {
-            if ($value < 0) {
-                $errors[] = $name . ' - ' . abs($errors);
+            if ($value > 0) {
+                $errors[] = $name . ' - ' . $value;
             }
         }
         
