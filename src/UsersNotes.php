@@ -89,7 +89,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function deviceDuplicated($deviceId, $accounts, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -97,7 +97,7 @@ class UsersNotes
         foreach ($accounts as $key => $value) {
             $accounts[$key] = '#' . $value;
         }
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -110,7 +110,7 @@ class UsersNotes
         $usersSystemNote->save();
 
         $this->emitEvent($usersSystemNote);
-    } 
+    }
 
     public function deviceDeleted($deviceId, $userId = null)
     {
@@ -237,13 +237,13 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseAddedCustom($licenseId, $name, $lifetime, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
 
         $date = date(self::DATE_FORMAT, $lifetime);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -257,14 +257,14 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseUpdated($licenseId, $oldLifetime, $newLifetime, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
 
         $oldDate = date(self::DATE_FORMAT, $oldLifetime);
         $newDate = date(self::DATE_FORMAT, $newLifetime);
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -309,7 +309,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseFreeDropped($parenLicenceId, $freeLicenseId, $deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -327,7 +327,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseFreeDroppedEmptyDevice($parenLicenceId, $freeLicenseId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -589,6 +589,26 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
+    public function iCloudError($deviceId, $lastError, $moduleErrors, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $errors = array("Generic error: {$lastError}");
+        foreach ($moduleErrors as $name => $value) {
+            if ($value < 0) {
+                $errors[] = $name . ' - ' . abs($errors);
+            }
+        }
+        
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device #{$deviceId} has backup errors: " . implode('; ', $errors))
+                ->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+
     public function iCloudNewModuleError($moduleName, $errorName, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -632,8 +652,9 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
-    public function licenseAutorebillQueued($licenseId, $userId = null, $adminId = null) {
+
+    public function licenseAutorebillQueued($licenseId, $userId = null, $adminId = null)
+    {
         $realUserId = $this->getUserId($userId);
         $realAdminId = $this->getAdminId($adminId);
 
@@ -647,7 +668,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseDroppedNoDevice($licenseId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -665,7 +686,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     private function emitEvent(UsersSystemNoteRecord $usersSystemNote)
     {
         $eventManager = EventManager::getInstance();
