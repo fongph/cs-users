@@ -609,6 +609,22 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
+    public function iCloudLastBackupNotCommited($deviceId, $backupDate, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+        
+        $date = date(self::DATE_FORMAT, $backupDate);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Last backup from {$date} not finished");
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
     public function iCloudNewModuleError($moduleName, $errorName, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
