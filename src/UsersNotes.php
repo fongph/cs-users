@@ -609,6 +609,19 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
+    public function iCloudForceBackup($deviceId, $userId = null) {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("New iCloud backup was requested manually");
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
     public function iCloudLastBackupNotCommited($deviceId, $backupDate, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
