@@ -72,6 +72,24 @@ class UsersNotes
         return $this->adminId;
     }
 
+    public function shoppingStarted($userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+            ->setUserId($realUserId)
+            ->setContent('User has started shopping');
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+
     public function deviceAdded($deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
