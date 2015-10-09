@@ -401,14 +401,14 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
-    public function licenseRebillPaymentFailed($licenseId, $userId = null)
+    public function licenseRebillPaymentFailed($orderId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Subscription #{$licenseId} rebill payment failed.")
+                ->setContent("Subscription Payment Failure for order #{$orderId}")
                 ->save();
 
         $this->emitEvent($usersSystemNote);
