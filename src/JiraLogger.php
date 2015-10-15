@@ -153,6 +153,10 @@ class JiraLogger
             $this->logEvent($data, 'billing-license-added');
         });
 
+        $manager->on('billing-order-started', function($data) {
+            $this->logEventWithEmail($data, 'billing-order-started');
+        });
+
         $manager->on('billing-order-completed', function($data) {
             $this->logEvent($data, 'billing-order-completed');
         });
