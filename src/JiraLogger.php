@@ -246,7 +246,7 @@ class JiraLogger
         });
         
         $manager->on('front-livechat', function($data) {
-            $this->logEvent($data, 'front-livechat');
+            $this->logEventWithEmail($data, 'front-livechat');
         });
     }
 
