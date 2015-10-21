@@ -153,6 +153,14 @@ class JiraLogger
             $this->logEvent($data, 'billing-license-added');
         });
 
+        $manager->on('billing-order-started', function($data) {
+            if (isset($data['userId']) && $data['userId'] > 0) {
+                $this->logEvent($data, 'billing-order-started');
+            } else {
+                $this->logEventWithEmail($data, 'billing-order-started');
+            }
+        });
+
         $manager->on('billing-order-completed', function($data) {
             $this->logEvent($data, 'billing-order-completed');
         });
