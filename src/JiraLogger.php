@@ -236,6 +236,10 @@ class JiraLogger
         $manager->on('front-registration-trial-completed', function($data) {
             $this->logEvent($data, 'front-registration-trial-completed');
         });
+        
+        $manager->on('front-livechat', function($data) {
+            $this->logEvent($data, 'front-livechat');
+        });
     }
 
 }
