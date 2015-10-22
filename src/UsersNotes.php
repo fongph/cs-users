@@ -548,7 +548,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Email was changed for user {$realUserId}. Old email - {$oldEmail}, new email - {$newEmail}.");
+                ->setContent("Email was changed for user #{$realUserId}. Old email - {$oldEmail}, new email - {$newEmail}.");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
