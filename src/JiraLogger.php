@@ -185,10 +185,6 @@ class JiraLogger
             $this->logEvent($data, 'license-added');
         });
         
-        $manager->on('license-added', function($data) {
-            $this->logEvent($data, 'license-added');
-        });
-        
         $manager->on('license-dropped', function($data) {
             $this->logEvent($data, 'license-dropped');
         });

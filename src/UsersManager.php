@@ -467,15 +467,15 @@ class UsersManager
         return $data;
     }
 
-    public function logAuth($userId, $timezone = '')
+    public function logAuth($userId)
     {
-        $info = get_browser();
+        $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+        
+        $info = get_browser($userAgent);
 
         $userAuthLog = new UserAuthLogRecord($this->db);
 
         $ip = IP::getRealIP();
-
-        $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
         $userAuthLog->setUserId($userId)
                 ->setIp($ip)
