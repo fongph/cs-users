@@ -671,6 +671,10 @@ class UsersNotes
                 ->setUserId($realUserId)
                 ->setContent("New iCloud backup was requested manually");
 
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
         $usersSystemNote->save();
 
         $this->emitEvent($usersSystemNote);
