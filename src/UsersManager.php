@@ -185,7 +185,7 @@ class UsersManager
         return $this->getDb()->query("SELECT `option`, `value` FROM `users_options` WHERE `user_id` = {$escapedUserId}")->fetchAll(\PDO::FETCH_KEY_PAIR);
     }
 
-    public function login($siteId, $email, $password)
+    public function login($siteId, $email, $password, $timezone = '')
     {
         $data = $this->getUserData($siteId, $email);
 
@@ -201,8 +201,8 @@ class UsersManager
             $this->incFailAttempts($siteId, $data);
             throw new InvalidPasswordException("Invalid password!");
         }
-
-        $this->logAuth($data['id']);
+        
+        $this->logAuth($data['id'], $timezone);
         unset($data['locked'], $data['password']);
 
         $data['options'] = $this->getUserOptions($data['id'], array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
@@ -467,19 +467,20 @@ class UsersManager
         return $data;
     }
 
-    public function logAuth($userId)
+    public function logAuth($userId, $timezone = '')
     {
-        $info = get_browser();
+        $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+        
+        $info = get_browser($userAgent);
 
         $userAuthLog = new UserAuthLogRecord($this->db);
 
         $ip = IP::getRealIP();
 
-        $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-
         $userAuthLog->setUserId($userId)
                 ->setIp($ip)
                 ->setCountry(IP::getCountry($ip))
+                ->setTimezone($timezone)
                 ->setFullInfo(@json_encode($info))
                 ->setUserAgent($userAgent);
 

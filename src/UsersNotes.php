@@ -276,6 +276,24 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
+    public function licenseExpirationDateUpdateRequest($licenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription expiration date setup requested for subscription #{$licenseId}");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
     public function licenseUpdated($licenseId, $oldLifetime, $newLifetime, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -652,6 +670,10 @@ class UsersNotes
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
                 ->setContent("New iCloud backup was requested manually");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
 
         $usersSystemNote->save();
 
