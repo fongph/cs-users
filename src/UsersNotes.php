@@ -72,6 +72,24 @@ class UsersNotes
         return $this->adminId;
     }
 
+    public function shoppingStarted($userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+            ->setUserId($realUserId)
+            ->setContent('User has started shopping');
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+
     public function deviceAdded($deviceId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -258,6 +276,24 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
+    public function licenseExpirationDateUpdateRequest($licenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription expiration date setup requested for subscription #{$licenseId}");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
     public function licenseUpdated($licenseId, $oldLifetime, $newLifetime, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -401,14 +437,14 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
-    public function licenseRebillPaymentFailed($licenseId, $userId = null)
+    public function licenseRebillPaymentFailed($orderId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Subscription #{$licenseId} rebill payment failed.")
+                ->setContent("Subscription Payment Failure for order #{$orderId}")
                 ->save();
 
         $this->emitEvent($usersSystemNote);
@@ -522,6 +558,24 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
+    
+    public function accountEmailChanged($oldEmail, $newEmail, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Email was changed for user #{$realUserId}. Old email - {$oldEmail}, new email - {$newEmail}.");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
 
     public function supportTicketSent($ticketId, $userId = null)
     {
@@ -609,6 +663,23 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
+    public function iCloudForceBackup($deviceId, $userId = null) {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("New iCloud backup was requested manually");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
     public function iCloudLastBackupNotCommited($deviceId, $backupDate, $userId = null)
     {
         $realUserId = $this->getUserId($userId);

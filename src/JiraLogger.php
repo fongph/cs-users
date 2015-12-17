@@ -157,6 +157,14 @@ class JiraLogger
             $this->logEvent($data, 'billing-license-added');
         });
 
+        $manager->on('billing-order-started', function($data) {
+            if (isset($data['userId']) && $data['userId'] > 0) {
+                $this->logEvent($data, 'billing-order-started');
+            } else {
+                $this->logEventWithEmail($data, 'billing-order-started');
+            }
+        });
+
         $manager->on('billing-order-completed', function($data) {
             $this->logEvent($data, 'billing-order-completed');
         });
@@ -175,10 +183,6 @@ class JiraLogger
         
         $manager->on('billing-autorebill-disabled', function($data) {
             $this->logEvent($data, 'billing-autorebill-disabled');
-        });
-        
-        $manager->on('license-added', function($data) {
-            $this->logEvent($data, 'license-added');
         });
         
         $manager->on('license-added', function($data) {
@@ -239,6 +243,10 @@ class JiraLogger
 
         $manager->on('front-registration-trial-completed', function($data) {
             $this->logEvent($data, 'front-registration-trial-completed');
+        });
+        
+        $manager->on('front-livechat', function($data) {
+            $this->logEventWithEmail($data, 'front-livechat');
         });
     }
 
