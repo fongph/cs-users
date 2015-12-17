@@ -49,6 +49,10 @@ class JiraLogger
             $this->logEvent($data, 'device-icloud-backup-processed');
         });
 
+        $manager->on('icloud-two-step-verification-error', function($data) {
+            $this->logEvent($data, 'icloud-two-step-verification-error');
+        });
+
         $manager->on('user-deleted', function($data) {
             $this->logEventWithEmail($data, 'user-deleted');
         });
