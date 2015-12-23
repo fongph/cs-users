@@ -350,6 +350,24 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
+    
+    public function licenseCancelationDiscountAccepted($licenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Discount 50% for subscription #{$licenseId} was accepted");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
 
     public function licenseExpired($licenseId, $userId = null)
     {
