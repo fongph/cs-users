@@ -120,6 +120,10 @@ class JiraLogger
             $this->logEvent($data, 'cp-support-completed');
         });
         
+        $manager->on('cp-license-cancelation-completed', function($data) {
+            $this->logEvent($data, 'cp-license-cancelation-completed');
+        });
+        
         $manager->on('cp-lost-password-completed', function($data) {
             $this->logEventWithEmail($data, 'cp-lost-password-completed');
         });
