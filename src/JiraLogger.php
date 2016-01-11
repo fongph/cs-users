@@ -23,6 +23,11 @@ class JiraLogger
         $this->pdo = $pdo;
     }
 
+    public function setPdo(\PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
     public function registerListeners()
     {
         $manager = EventManager::getInstance();
