@@ -725,7 +725,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Last backup from {$date} not finished");
+                ->setContent("Device {$deviceId}. Last backup from {$date} not finished");
 
         $usersSystemNote->save();
 
