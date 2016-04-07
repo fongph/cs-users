@@ -78,8 +78,8 @@ class UsersNotes
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-            ->setUserId($realUserId)
-            ->setContent('User has started shopping');
+                ->setUserId($realUserId)
+                ->setContent('User has started shopping');
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
@@ -293,7 +293,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseUpdated($licenseId, $oldLifetime, $newLifetime, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -332,7 +332,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseDiscountOffered($licenseId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -350,7 +350,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function licenseCancelationDiscountAccepted($licenseId, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -594,7 +594,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function accountEmailChanged($oldEmail, $newEmail, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -689,7 +689,7 @@ class UsersNotes
                 $errors[] = $name . ' - ' . $value;
             }
         }
-        
+
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
@@ -699,7 +699,8 @@ class UsersNotes
         $this->emitEvent($usersSystemNote);
     }
 
-    public function iCloudForceBackup($deviceId, $userId = null) {
+    public function iCloudForceBackup($deviceId, $userId = null)
+    {
         $realUserId = $this->getUserId($userId);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
@@ -715,11 +716,11 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function iCloudLastBackupNotCommited($deviceId, $backupDate, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
-        
+
         $date = date(self::DATE_FORMAT, $backupDate);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
@@ -731,7 +732,7 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
-    
+
     public function iCloudNewModuleError($moduleName, $errorName, $userId = null)
     {
         $realUserId = $this->getUserId($userId);
@@ -806,6 +807,32 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+
+    public function deviceDeactivatedOnReincubate($deviceId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device #{$deviceId} was deactivated on Reincubate.")
+                ->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+    
+    public function deviceActivatedOnReincubate($deviceId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device #{$deviceId} was activated on Reincubate.")
+                ->save();
 
         $this->emitEvent($usersSystemNote);
     }
