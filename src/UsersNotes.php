@@ -358,7 +358,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Discount 50% for subscription #{$licenseId} was accepted");
+                ->setContent("Discount 20% for subscription #{$licenseId} was accepted");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
