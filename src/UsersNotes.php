@@ -523,14 +523,32 @@ class UsersNotes
         $usersSystemNote->save();
     }
 
-    public function accountLocked($userId = null)
+    public function accountLocked($userId = null, $countLoginAttempts, $ip, $userAgent)
     {
         $realUserId = $this->getUserId($userId);
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Account locked");
+                ->setContent("Account was blocked after {$countLoginAttempts} unsuccessfull login attempts. Last IP: {$ip}, last user agent: {$userAgent} ");
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
+
+    public function accountLockedMobileApplication($userId = null, $countLoginAttempts, $platform)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent(" Account was blocked after {$countLoginAttempts} unsuccessfull login attempts from CPapp. platform: {$platform} ");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);

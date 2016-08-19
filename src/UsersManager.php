@@ -188,6 +188,8 @@ class UsersManager
     public function login($siteId, $email, $password, $timezone = '')
     {
         $data = $this->getUserData($siteId, $email);
+        $data['userAgent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+        $data['ip'] = IP::getRealIP();
 
         if ($data == false) {
             throw new UserNotFoundException("User not found!");
@@ -362,7 +364,7 @@ class UsersManager
     {
         if ($this->getLoginAttemptsCount($data['id']) >= $this->loginAttempts - 1) {
             $this->lockWithHash($siteId, $data['id'], $data['login']);
-            $this->getUsersNotesProcessor()->accountLocked($data['id']);
+            $this->getUsersNotesProcessor()->accountLocked($data['id'],$this->loginAttempts, $data['ip'], $data['userAgent']);
             throw new UserLockedException("User account is locked out!");
         }
 
