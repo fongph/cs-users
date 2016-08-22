@@ -40,10 +40,11 @@ class SessionsManager
 
     public function create($siteId, $email, $password, $userAgent, $lifeTime = self::DEFAULT_LIFE_TIME)
     {
-        $mailProcessor = new RemoteProcessor(
-            GlobalSettings::getMailSenderURL(1), GlobalSettings::getMailSenderSecret(1)
-        );
-        $mailSender = new MailSender($mailProcessor);
+        $mailSender = new \CS\Mail\MailSender(new \CS\Mail\Processor\RemoteProcessor(
+            GlobalSettings::getMailSenderURL(1), GlobalSettings::getMailSenderSecret(1)));
+
+        $mailSender->setLocale('en-GB')
+            ->setSiteId(1);
         $usersManager = new UsersManager($this->pdo);
         $usersManager->setSender($mailSender);
         $environment = array(
