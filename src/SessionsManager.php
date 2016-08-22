@@ -51,7 +51,7 @@ class SessionsManager
             'platform' => $userAgent
         );
 
-        $data = $usersManager->login($siteId, $email, $password, $environment);
+        $data = $usersManager->login($siteId, $email, $password, '', $environment);
 
         $token = $this->getToken($email);
         
