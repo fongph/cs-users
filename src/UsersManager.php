@@ -185,11 +185,9 @@ class UsersManager
         return $this->getDb()->query("SELECT `option`, `value` FROM `users_options` WHERE `user_id` = {$escapedUserId}")->fetchAll(\PDO::FETCH_KEY_PAIR);
     }
 
-    public function login($siteId, $email, $password, $timezone = '')
+    public function login($siteId, $email, $password, $timezone = '', $environment)
     {
         $data = $this->getUserData($siteId, $email);
-        $data['userAgent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-        $data['ip'] = IP::getRealIP();
 
         if ($data == false) {
             throw new UserNotFoundException("User not found!");
@@ -200,7 +198,7 @@ class UsersManager
         }
 
         if (!$this->verifyPassword($data['password'], $password)) {
-            $this->incFailAttempts($siteId, $data);
+            $this->incFailAttempts($siteId, $data, $environment);
             throw new InvalidPasswordException("Invalid password!");
         }
         
@@ -360,11 +358,17 @@ class UsersManager
         return $this->getDb()->exec("DELETE FROM `users_auth_attempts` WHERE `user_id` = {$userId}");
     }
 
-    private function incFailAttempts($siteId, $data)
+    private function incFailAttempts($siteId, $data, $environment)
     {
         if ($this->getLoginAttemptsCount($data['id']) >= $this->loginAttempts - 1) {
             $this->lockWithHash($siteId, $data['id'], $data['login']);
-            $this->getUsersNotesProcessor()->accountLocked($data['id'],$this->loginAttempts, $data['ip'], $data['userAgent']);
+            if ($environment['from'] == 'ControlPanel'){
+                $this->getUsersNotesProcessor()->accountLocked($data['id'],$this->loginAttempts, $environment['ip'], $environment['userAgent']);
+            } elseif ($environment['from'] == 'MobileApplication'){
+                $this->getUsersNotesProcessor()->accountLockedMobileApplication($data['id'],$this->loginAttempts, $environment['platform']);
+
+            }
+
             throw new UserLockedException("User account is locked out!");
         }
 

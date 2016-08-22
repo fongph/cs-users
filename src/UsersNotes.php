@@ -548,7 +548,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent(" Account was blocked after {$countLoginAttempts} unsuccessfull login attempts from CPapp. platform: {$platform} ");
+                ->setContent("Account was blocked after {$countLoginAttempts} unsuccessfull login attempts from CPapp. Platform: {$platform} ");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);

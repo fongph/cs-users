@@ -1,6 +1,10 @@
 <?php
 
 namespace CS\Users;
+use CS\Mail\MailSender;
+use CS\Mail\Processor\RemoteProcessor;
+use CS\Settings\GlobalSettings;
+
 
 /**
  * Description of SessionsManager
@@ -36,9 +40,18 @@ class SessionsManager
 
     public function create($siteId, $email, $password, $userAgent, $lifeTime = self::DEFAULT_LIFE_TIME)
     {
+        $mailProcessor = new RemoteProcessor(
+            GlobalSettings::getMailSenderURL(1), GlobalSettings::getMailSenderSecret(1)
+        );
+        $mailSender = new MailSender($mailProcessor);
         $usersManager = new UsersManager($this->pdo);
+        $usersManager->setSender($mailSender);
+        $environment = array(
+            'from' => 'MobileApplication',
+            'platform' => $userAgent
+        );
 
-        $data = $usersManager->login($siteId, $email, $password);
+        $data = $usersManager->login($siteId, $email, $password, $environment);
 
         $token = $this->getToken($email);
         
