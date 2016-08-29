@@ -895,6 +895,7 @@ class UsersNotes
 
             case $type == self::TYPE_SYSTEM && !is_null($joinId):
             case $type != self::TYPE_AUTH && (int) $joinId:
+            case $type != self::TYPE_APP && (int) $joinId:
                 throw new WrongSystemNoteParams;
         }
 
