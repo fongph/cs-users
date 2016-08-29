@@ -201,8 +201,8 @@ class UsersManager
             $this->incFailAttempts($siteId, $data, $environment);
             throw new InvalidPasswordException("Invalid password!");
         }
-        
-        $this->logAuth($data['id'], $timezone);
+
+        $this->logAuth($data['id'], $timezone, $environment);
         unset($data['locked'], $data['password']);
 
         $data['options'] = $this->getUserOptions($data['id'], array(UserOptionRecord::SCOPE_GLOBAL, UserOptionRecord::SCOPE_CONTROL_PANEL));
@@ -473,7 +473,7 @@ class UsersManager
         return $data;
     }
 
-    public function logAuth($userId, $timezone = '')
+    public function logAuth($userId, $timezone = '', $environment)
     {
         $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
         
@@ -511,7 +511,14 @@ class UsersManager
         $userAuthLog->save();
 
         $usersNotes = $this->getUsersNotesProcessor();
-        $usersNotes->accountEntered($userAuthLog->getId(), $userId);
+        
+        if ($environment['from'] == 'ControlPanel'){
+            $usersNotes->accountEntered($userAuthLog->getId(), $userId);
+        } elseif ($environment['from'] == 'MobileApplication'){
+            $usersNotes->accountEnteredMobileApplication($userAuthLog->getId(), $userId, $info->platform, $info->version );
+        }
+
+
     }
 
     public function lock($id)

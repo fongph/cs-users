@@ -55,14 +55,12 @@ class SessionsManager
         $data = $usersManager->login($siteId, $email, $password, '', $environment);
 
         $token = $this->getToken($email);
-        
         $userId = $this->pdo->quote($data['id']);
         $userAgentString = $this->pdo->quote($userAgent);
         $lifeTimeValue = $this->pdo->quote($lifeTime + time());
         $sessionId = $this->pdo->quote($token);
 
         $this->pdo->exec("INSERT INTO `users_auth_sessions` SET `user_id` = {$userId}, `session_id` = {$sessionId}, `user_agent` = {$userAgentString}, `lifetime` = {$lifeTimeValue}");
-        
         return $token;
     }
 

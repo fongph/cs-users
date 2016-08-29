@@ -12,6 +12,7 @@ class UsersNotes
 
     const TYPE_SYSTEM = 'sys';
     const TYPE_AUTH = 'auth';
+    const TYPE_APP = 'app';
     const DATE_FORMAT = 'd-m-Y';
 
     /**
@@ -34,6 +35,7 @@ class UsersNotes
     protected $availableTypes = array(
         self::TYPE_AUTH,
         self::TYPE_SYSTEM,
+        self::TYPE_APP,
     );
 
     /**
@@ -375,9 +377,9 @@ class UsersNotes
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($realUserId)
-                ->setContent("Subscription #{$licenseId} expired")
-                ->save();
+            ->setUserId($realUserId)
+            ->setContent("Subscription #{$licenseId} expired")
+            ->save();
 
         $this->emitEvent($usersSystemNote);
     }
@@ -388,8 +390,8 @@ class UsersNotes
 
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
-                ->setUserId($realUserId)
-                ->setContent("Free Subscription #{$freeLicenseId} (parent subscription #{$parenLicenceId}) dropped from device #{$deviceId}");
+            ->setUserId($realUserId)
+            ->setContent("Free Subscription #{$freeLicenseId} (parent subscription #{$parenLicenceId}) dropped from device #{$deviceId}");
 
         if ($this->adminId !== null) {
             $usersSystemNote->setAdminId($this->adminId);
@@ -500,6 +502,24 @@ class UsersNotes
         }
 
         $usersSystemNote->save();
+    }
+    public function accountEnteredMobileApplication($authLogId, $userId = null, $platform, $version)
+    {
+        $realUserId = $this->getUserId($userId);
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_APP)
+            ->setUserId($realUserId)
+            ->setJoinId($authLogId)
+            ->setContent("Login from {$version} CPApp version {$platform} ");
+
+
+        if ($this->adminId !== null) {
+            $usersSystemNote->setAdminId($this->adminId);
+        }
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
     }
 
     public function accountEnteredAdmin($supportMode = false, $userId = null)
