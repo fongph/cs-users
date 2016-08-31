@@ -512,10 +512,10 @@ class UsersManager
 
         $usersNotes = $this->getUsersNotesProcessor();
         
-        if ($environment['from'] == 'ControlPanel'){
-            $usersNotes->accountEntered($userAuthLog->getId(), $userId);
-        } elseif ($environment['from'] == 'MobileApplication'){
+        if ($environment['from'] == 'MobileApplication'){
             $usersNotes->accountEnteredMobileApplication($userAuthLog->getId(), $userId, $environment['platform']);
+        } else {
+            $usersNotes->accountEntered($userAuthLog->getId(), $userId);
         }
 
 
