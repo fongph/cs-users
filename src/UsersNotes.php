@@ -503,14 +503,14 @@ class UsersNotes
 
         $usersSystemNote->save();
     }
-    public function accountEnteredMobileApplication($authLogId, $userId = null, $platform, $version)
+    public function accountEnteredMobileApplication($authLogId, $userId = null, $platform)
     {
         $realUserId = $this->getUserId($userId);
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_APP)
             ->setUserId($realUserId)
             ->setJoinId($authLogId)
-            ->setContent("Login from {$version} CPApp version {$platform} ");
+            ->setContent("Login from {$platform} ");
 
 
         if ($this->adminId !== null) {

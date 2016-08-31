@@ -515,7 +515,7 @@ class UsersManager
         if ($environment['from'] == 'ControlPanel'){
             $usersNotes->accountEntered($userAuthLog->getId(), $userId);
         } elseif ($environment['from'] == 'MobileApplication'){
-            $usersNotes->accountEnteredMobileApplication($userAuthLog->getId(), $userId, $info->platform, $info->version );
+            $usersNotes->accountEnteredMobileApplication($userAuthLog->getId(), $userId, $environment['platform']);
         }
 
 
