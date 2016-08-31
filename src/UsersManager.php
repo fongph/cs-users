@@ -473,7 +473,7 @@ class UsersManager
         return $data;
     }
 
-    public function logAuth($userId, $timezone = '', $environment)
+    public function logAuth($userId, $timezone = '', $environment = array())
     {
         $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
         
