@@ -510,7 +510,7 @@ class UsersNotes
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_APP)
             ->setUserId($realUserId)
             ->setJoinId($authLogId)
-            ->setContent("Login from {$platform} ");
+            ->setContent("Login from {$platform}");
 
 
         if ($this->adminId !== null) {
