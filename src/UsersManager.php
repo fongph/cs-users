@@ -512,7 +512,7 @@ class UsersManager
 
         $usersNotes = $this->getUsersNotesProcessor();
         
-        if ($environment['from'] == 'MobileApplication'){
+        if (isset($environment['from']) && $environment['from'] == 'MobileApplication'){
             $usersNotes->accountEnteredMobileApplication($userAuthLog->getId(), $userId, $environment['platform']);
         } else {
             $usersNotes->accountEntered($userAuthLog->getId(), $userId);
