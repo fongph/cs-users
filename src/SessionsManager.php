@@ -45,7 +45,7 @@ class SessionsManager {
         return $this->usersManager;
     }
 
-    public function setUsersManager(CS\Users\UsersManager $usersManager)
+    public function setUsersManager(UsersManager $usersManager)
     {
         $this->usersManager = $usersManager;
 
