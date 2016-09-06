@@ -16,8 +16,7 @@ use PDO,
  *
  * @author root
  */
-class UsersManager
-{
+class UsersManager {
 
     /**
      * Database connection
@@ -130,13 +129,14 @@ class UsersManager
         return $this;
     }
 
-    public function hasUserOption($userId, $option, $scope = null) {
+    public function hasUserOption($userId, $option, $scope = null)
+    {
         $escapedUserId = $this->getDb()->quote($userId);
         $escapedOption = $this->getDb()->quote($option);
-        
+
         return $this->getDb()->query("SELECT `value` FROM `users_options` WHERE `user_id` = {$escapedUserId} AND `option` = {$escapedOption} LIMIT 1")->fetch(PDO::FETCH_ASSOC);
     }
-    
+
     public function getUserOption($userId, $option, $scope = null)
     {
         $escapedUserId = $this->getDb()->quote($userId);
@@ -362,11 +362,10 @@ class UsersManager
     {
         if ($this->getLoginAttemptsCount($data['id']) >= $this->loginAttempts - 1) {
             $this->lockWithHash($siteId, $data['id'], $data['login']);
-            if ($environment['from'] == 'ControlPanel'){
-                $this->getUsersNotesProcessor()->accountLocked($data['id'],$this->loginAttempts, $environment['ip'], $environment['userAgent']);
-            } elseif ($environment['from'] == 'MobileApplication'){
-                $this->getUsersNotesProcessor()->accountLockedMobileApplication($data['id'],$this->loginAttempts, $environment['platform']);
-
+            if ($environment['from'] == 'ControlPanel') {
+                $this->getUsersNotesProcessor()->accountLocked($data['id'], $this->loginAttempts, $environment['ip'], $environment['userAgent']);
+            } elseif ($environment['from'] == 'MobileApplication') {
+                $this->getUsersNotesProcessor()->accountLockedMobileApplication($data['id'], $this->loginAttempts, $environment['platform']);
             }
 
             throw new UserLockedException("User account is locked out!");
@@ -476,7 +475,7 @@ class UsersManager
     public function logAuth($userId, $timezone = '', $environment = array())
     {
         $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-        
+
         $info = get_browser($userAgent);
 
         $userAuthLog = new UserAuthLogRecord($this->db);
@@ -511,14 +510,12 @@ class UsersManager
         $userAuthLog->save();
 
         $usersNotes = $this->getUsersNotesProcessor();
-        
-        if (isset($environment['from']) && $environment['from'] == 'MobileApplication'){
+
+        if (isset($environment['from']) && $environment['from'] == 'MobileApplication') {
             $usersNotes->accountEnteredMobileApplication($userAuthLog->getId(), $userId, $environment['platform']);
         } else {
             $usersNotes->accountEntered($userAuthLog->getId(), $userId);
         }
-
-
     }
 
     public function lock($id)
@@ -551,35 +548,38 @@ class UsersManager
                 ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
 
-        if($sendMail)
+        if ($sendMail)
             $this->getSender()
                     ->setUserId($userRecord->getId())
                     ->sendRegistrationSuccessWithPassword($email, $email, $password);
 
         return $userRecord->getId();
     }
-    
-    public function updateUserPassword($id) {
+
+    public function updateUserPassword($id)
+    {
         $password = substr($this->getRandomString(), 0, 8);
         $emailConfirmHash = $this->getRandomString('confirm');
         // $this->setUserPassword($id, $password);
         $userRecord = new UserRecord($this->db);
         $userRecord->load($id);
         $userRecord->setPassword($this->getPasswordHash($password))
-                 ->setEmailConfirmHash($emailConfirmHash)
+                ->setEmailConfirmHash($emailConfirmHash)
                 ->save();
-        
+
         $this->getSender()
                 ->setUserId($userRecord->getId())
                 ->sendRegistrationSuccessWithPassword($userRecord->getLogin(), $userRecord->getLogin(), $password);
-        
+
         return $userRecord->getId();
     }
-    
+
     // affiliates
-    public function getAffiliateId( $affId ) {
-        if(empty($affId)) return false;
-        $affId  = $this->db->quote($affId );
+    public function getAffiliateId($affId)
+    {
+        if (empty($affId))
+            return false;
+        $affId = $this->db->quote($affId);
 
         $data = $this->db->query("SELECT
                                         *
@@ -587,7 +587,7 @@ class UsersManager
                                     WHERE
                                         `id` = {$affId}
                                     LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-                                        
+
         return $data;
     }
 
@@ -674,7 +674,9 @@ class UsersManager
 
     public function getSessionManager()
     {
-        return new SessionsManager($this->db);
+        $sessionManager = new SessionsManager($this->db);
+        
+        return $sessionManager->setUsersManager($this);
     }
 
     /**
