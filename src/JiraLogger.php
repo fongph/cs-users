@@ -32,11 +32,11 @@ class JiraLogger
     {
         $manager = EventManager::getInstance();
 
-        $manager->on('email-sended', function($data) {
-            if (!$data['system']) {
-                $this->logEmailSended($data);
-            }
-        });
+//        $manager->on('email-sended', function($data) {
+//            if (!$data['system']) {
+//                $this->logEmailSended($data);
+//            }
+//        });
 
         $manager->on('user-note-added', function($data) {
             $this->logUserNoteAdded($data);

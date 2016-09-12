@@ -703,24 +703,16 @@ class UsersManager {
 
         $manager = EventManager::getInstance();
 
-        $manager->on('email-sended', function($data) use ($pdo) {
-            if (isset($data['userId'])) {
-                self::logUserEmailSended($pdo, $data['userId'], $data['type']);
-            }
-        });
+//        $manager->on('email-sended', function($data) use ($pdo) {
+//            if (isset($data['userId'])) {
+//                self::logUserEmailSended($pdo, $data['userId'], $data['type']);
+//            }
+//        });
 
         $jiraLogger = new JiraLogger($pdo);
         $jiraLogger->registerListeners();
 
         self::$listenersRegistered = true;
-    }
-
-    private static function logUserEmailSended(PDO $pdo, $userId, $type)
-    {
-        $escapedUserId = $pdo->quote($userId);
-        $escapedType = $pdo->quote($type);
-
-        $pdo->exec("INSERT INTO `users_emails_log` SET `user_id` = {$escapedUserId}, `type` = {$escapedType}");
     }
 
 }
