@@ -221,6 +221,10 @@ class JiraLogger
         $manager->on('license-updated', function($data) {
             $this->logEvent($data, 'license-updated');
         });
+
+        $manager->on('license-migrated', function($data) {
+            $this->logEvent($data, 'license-migrated');
+        });
     }
 
     private function registerFrontListeners(EventManager $manager)
