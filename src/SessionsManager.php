@@ -1,23 +1,24 @@
 <?php
 
 namespace CS\Users;
+
+use CS\Users\UsersManager;
 use CS\Mail\MailSender;
 use CS\Mail\Processor\RemoteProcessor;
 use CS\Settings\GlobalSettings;
-
 
 /**
  * Description of SessionsManager
  *
  * @author root
  */
-class SessionsManager
-{
+class SessionsManager {
 
     const DEFAULT_LIFE_TIME = 86400;
     const MAX_ACTIVE_SESSIONS_PER_ACCOUNT = 16;
 
     private $pdo;
+    private $usersManager;
 
     private function getToken($email)
     {
@@ -27,6 +28,28 @@ class SessionsManager
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
+    }
+
+    /**
+     * 
+     * @todo remove cyclic links
+     * @return type
+     * @throws InvalidSenderObjectException
+     */
+    private function getUsersManager()
+    {
+        if (!($this->usersManager instanceof UsersManager)) {
+            throw new Exception("UsersManger must be defined");
+        }
+
+        return $this->usersManager;
+    }
+
+    public function setUsersManager(UsersManager $usersManager)
+    {
+        $this->usersManager = $usersManager;
+
+        return $this;
     }
 
     public function getSessionUserId($token, $userAgent)
@@ -40,19 +63,12 @@ class SessionsManager
 
     public function create($siteId, $email, $password, $userAgent, $lifeTime = self::DEFAULT_LIFE_TIME)
     {
-        $mailSender = new \CS\Mail\MailSender(new \CS\Mail\Processor\RemoteProcessor(
-            GlobalSettings::getMailSenderURL(1), GlobalSettings::getMailSenderSecret(1)));
-
-        $mailSender->setLocale('en-GB')
-            ->setSiteId(1);
-        $usersManager = new UsersManager($this->pdo);
-        $usersManager->setSender($mailSender);
         $environment = array(
             'from' => 'MobileApplication',
             'platform' => $userAgent
         );
 
-        $data = $usersManager->login($siteId, $email, $password, '', $environment);
+        $data = $this->getUsersManager()->login($siteId, $email, $password, '', $environment);
 
         $token = $this->getToken($email);
         $userId = $this->pdo->quote($data['id']);
