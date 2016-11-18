@@ -848,6 +848,19 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
+   public function licenseMigrated($oldProduct, $newProduct, $licenseId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Subscription #{$licenseId} was upgraded from {$oldProduct} to {$newProduct}");
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
 
     public function deviceDeactivatedOnReincubate($deviceId, $userId = null)
     {
