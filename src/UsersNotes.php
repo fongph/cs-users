@@ -861,6 +861,19 @@ class UsersNotes
 
         $this->emitEvent($usersSystemNote);
     }
+    public function eraseDeviceData($deviceId, $userId = null)
+    {
+        $realUserId = $this->getUserId($userId);
+
+        $usersSystemNote = new UsersSystemNoteRecord($this->db);
+        $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
+                ->setUserId($realUserId)
+                ->setContent("Device data was erased for  #{$deviceId}");
+
+        $usersSystemNote->save();
+
+        $this->emitEvent($usersSystemNote);
+    }
 
     public function deviceDeactivatedOnReincubate($deviceId, $userId = null)
     {
