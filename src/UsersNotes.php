@@ -868,7 +868,7 @@ class UsersNotes
         $usersSystemNote = new UsersSystemNoteRecord($this->db);
         $usersSystemNote->setType(UsersSystemNoteRecord::TYPE_SYSTEM)
                 ->setUserId($realUserId)
-                ->setContent("Device data was erased for  #{$deviceId}");
+                ->setContent("Device data was erased for #{$deviceId}");
 
         $usersSystemNote->save();
 
