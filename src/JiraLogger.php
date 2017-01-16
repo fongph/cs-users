@@ -261,6 +261,10 @@ class JiraLogger
         $manager->on('front-livechat', function($data) {
             $this->logEventWithEmail($data, 'front-livechat');
         });
+
+        $manager->on('front-employee-request-completed', function($data) {
+            $this->logEventWithEmail($data, 'front-employee-request-completed');
+        });
     }
 
 }
