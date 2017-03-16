@@ -217,6 +217,14 @@ class UsersManager {
             throw new UsersEmailNotFoundException();
         }
 
+        $userName = false;
+        $user = $this->getUser($userId);
+        if($user){
+            $userName = $user->getName();
+        }
+
+
+
         $secret = $this->getRandomString();
 
         $escapedUserId = $this->getDb()->quote($userId);
@@ -235,7 +243,7 @@ class UsersManager {
 
         $this->getSender()
                 ->setUserId($userId)
-                ->sendLostPassword($email, $restorePasswordUrl);
+                ->sendLostPassword($email, $restorePasswordUrl,$userName);
 
         return true;
     }
@@ -385,9 +393,16 @@ class UsersManager {
         $this->db->exec("UPDATE `users` SET `unlock_hash` = {$secretValue}, `locked` = 1, `updated_at` = NOW() WHERE `id` = {$userId}");
 
         $unlockAccountUrl = GlobalSettings::getUnlockAccountPageUrl($siteId, $email, $secret);
+
+        $userName = false;
+        $user = $this->getUser($id);
+        if($user){
+            $userName = $user->getName();
+        }
+
         $this->getSender()
                 ->setUserId($id)
-                ->sendUnlockPassword($email, $unlockAccountUrl);
+                ->sendUnlockPassword($email, $unlockAccountUrl,$userName);
 
         $this->removeLoginAttempts($id);
         return true;
