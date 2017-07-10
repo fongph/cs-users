@@ -193,6 +193,10 @@ class JiraLogger
         $manager->on('billing-autorebill-disabled', function($data) {
             $this->logEvent($data, 'billing-autorebill-disabled');
         });
+
+        $manager->on('billing-order-ga-source', function($data) {
+            $this->logEvent($data, 'billing-order-ga-source');
+        });
         
         $manager->on('license-added', function($data) {
             $this->logEvent($data, 'license-added');
