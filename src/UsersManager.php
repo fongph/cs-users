@@ -568,7 +568,8 @@ class UsersManager {
                     ->setUserId($userRecord->getId())
                     ->sendRegistrationSuccessWithPassword($email, $email, $password);
 
-        return $userRecord->getId();
+        return ['userId' => $userRecord->getId(), 'password' => $password];
+//        return $userRecord->getId();
     }
 
     public function updateUserPassword($id)
