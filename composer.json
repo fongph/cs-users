@@ -15,6 +15,10 @@
         {
             "type": "git",
             "url": "git@gitlab.dizboard.com:pumpic/cs-mail.git"
+        },
+        {
+            "type": "git",
+            "url": "git@gitlab.dizboard.com:pumpic/jira-client.git"
         }
     ],
     "require": {
@@ -23,7 +27,7 @@
         "boomers/cs-models": "dev-master",
         "boomers/cs-mail": "dev-master",
         "rastor/eventmanager": "1.1",
-        "rastor/jira-client": "~0.3",
+        "boomers/jira-client": "~0.3",
         "monolog/monolog": "1.*"
     },
     "require-dev": {
