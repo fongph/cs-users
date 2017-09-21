@@ -27,7 +27,7 @@
         "boomers/cs-models": "dev-master",
         "boomers/cs-mail": "dev-master",
         "rastor/eventmanager": "1.1",
-        "boomers/jira-client": "0.4.0",
+        "boomers/jira-client": "dev-master",
         "monolog/monolog": "1.*"
     },
     "require-dev": {
