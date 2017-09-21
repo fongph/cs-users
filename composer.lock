@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "06b7c28dfbc928625921b6e43566c5e6",
-    "content-hash": "685d6a532cef87d32c726507f987ee16",
+    "hash": "768574840272f9e511dae4006df3b50a",
+    "content-hash": "dc3a6feabece2dd62d672f89522a52b7",
     "packages": [
         {
             "name": "boomers/cs-mail",
@@ -73,6 +73,41 @@
                 ]
             },
             "time": "2014-11-11 13:33:06"
+        },
+        {
+            "name": "boomers/jira-client",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@gitlab.dizboard.com:pumpic/jira-client.git",
+                "reference": "8d86133e429038faff2077f5139873dc32a73055"
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~5.0|~6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JiraClient\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Orest Budzhak",
+                    "email": "doom4eg@gmail.com"
+                }
+            ],
+            "description": "A simple PHP JIRA REST client",
+            "keywords": [
+                "api",
+                "client",
+                "jira",
+                "rest"
+            ],
+            "time": "2017-09-18 13:45:03"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -464,48 +499,6 @@
                 "events"
             ],
             "time": "2015-07-06 08:29:29"
-        },
-        {
-            "name": "rastor/jira-client",
-            "version": "0.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/oRastor/jira-client.git",
-                "reference": "6a486a0772f2afa2996c02a50dedc8aa20d5830f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/oRastor/jira-client/zipball/6a486a0772f2afa2996c02a50dedc8aa20d5830f",
-                "reference": "6a486a0772f2afa2996c02a50dedc8aa20d5830f",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "~5.0|~6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "JiraClient\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Orest Budzhak",
-                    "email": "doom4eg@gmail.com"
-                }
-            ],
-            "description": "A simple PHP JIRA REST client",
-            "keywords": [
-                "api",
-                "client",
-                "jira",
-                "rest"
-            ],
-            "time": "2017-07-28 06:43:52"
         },
         {
             "name": "react/promise",
@@ -1793,7 +1786,8 @@
     "stability-flags": {
         "boomers/ip": 20,
         "boomers/cs-models": 20,
-        "boomers/cs-mail": 20
+        "boomers/cs-mail": 20,
+        "boomers/jira-client": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
