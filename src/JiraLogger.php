@@ -129,7 +129,7 @@ class JiraLogger
 
         $publisher = new PhpAmqpLibMessagePublisher($queueChannel, '');
 
-        $message = new Message(json_encode($data));
+        $message = new Message(json_encode(array_merge(array('event' => $event), $data)));
         $publisher->publish($message, self::QUEUE_NAME);
     }
 
@@ -149,7 +149,7 @@ class JiraLogger
         $queueChannel = $this->setQueue($this->queueConfig);
         $publisher = new PhpAmqpLibMessagePublisher($queueChannel, '');
 
-        $message = new Message(json_encode($data));
+        $message = new Message(json_encode(array_merge(array('event' => $event), $data)));
         $publisher->publish($message, self::QUEUE_NAME);
     }
 
