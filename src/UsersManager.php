@@ -711,7 +711,7 @@ class UsersManager {
         return $user;
     }
 
-    public static function registerListeners(PDO $pdo)
+    public static function registerListeners(PDO $pdo, $queue = null)
     {
         if (self::$listenersRegistered) {
             return;
@@ -725,7 +725,7 @@ class UsersManager {
 //            }
 //        });
 
-        $jiraLogger = new JiraLogger($pdo);
+        $jiraLogger = new JiraLogger($pdo, $queue);
         $jiraLogger->registerListeners();
 
         self::$listenersRegistered = true;

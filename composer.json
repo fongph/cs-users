@@ -28,7 +28,8 @@
         "boomers/cs-mail": "dev-master",
         "rastor/eventmanager": "1.1",
         "boomers/jira-client": "dev-master",
-        "monolog/monolog": "1.*"
+        "monolog/monolog": "1.*",
+        "swarrot/swarrot": "^2.2"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*"

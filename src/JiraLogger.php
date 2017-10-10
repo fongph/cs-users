@@ -3,6 +3,10 @@
 namespace CS\Users;
 
 use EventManager\EventManager;
+use Swarrot\Broker\Message;
+use Swarrot\Broker\MessageProvider\PeclPackageMessageProvider;
+use Swarrot\Broker\MessagePublisher\PhpAmqpLibMessagePublisher;
+
 
 /**
  * Description of JiraLogger
@@ -11,21 +15,46 @@ use EventManager\EventManager;
  */
 class JiraLogger
 {
+    const QUEUE_NAME = 'jira';
 
     /**
      *
      * @var \PDO
      */
     private $pdo;
+    private $queueConfig;
 
-    public function __construct(\PDO $pdo)
+
+    public function __construct(\PDO $pdo, $queueConfig)
     {
         $this->pdo = $pdo;
+        $this->queueConfig = $queueConfig;
+
     }
 
     public function setPdo(\PDO $pdo)
     {
         $this->pdo = $pdo;
+    }
+
+    public function setQueue($queueConfig)
+    {
+        $this->queueConfig = $queueConfig;
+
+//        $queueConfig = CS\Settings\GlobalSettings::getQueueConfig();
+
+        // Create connection
+        $connection = new \AMQPConnection($this->queueConfig);
+        $queueChannel = new \AMQPChannel($connection);
+
+        // Get the queue to consume
+        $queue = new \AMQPQueue($queueChannel);
+        $queue->setName(self::QUEUE_NAME);
+
+        return $queueChannel;
+//        $connection = new PhpAmqpLib\Connection\AMQPConnection($this->queueConfig['host'], $this->queueConfig['port'], $this->queueConfig['user'], $this->queueConfig['password']);
+//        $queueChannel = $connection->channel();
+
     }
 
     public function registerListeners()
@@ -98,6 +127,13 @@ class JiraLogger
         $eventName = $this->pdo->quote($event);
 
         $this->pdo->exec("INSERT INTO `jira_logs` SET `user_id` = {$userId}, `event` = {$eventName}, `data` = {$serializedData}");
+
+        $queueChannel = $this->setQueue($this->queueConfig);
+
+        $publisher = new PhpAmqpLibMessagePublisher($queueChannel, '');
+
+        $message = new Message(json_encode($data));
+        $publisher->publish($message, self::QUEUE_NAME);
     }
 
     private function logEventWithEmail($data, $event)
@@ -112,6 +148,12 @@ class JiraLogger
         $eventName = $this->pdo->quote($event);
 
         $this->pdo->exec("INSERT INTO `jira_logs` SET `email` = {$email}, `event` = {$eventName}, `data` = {$serializedData}");
+
+        $queueChannel = $this->setQueue($this->queueConfig);
+        $publisher = new PhpAmqpLibMessagePublisher($queueChannel, '');
+
+        $message = new Message(json_encode($data));
+        $publisher->publish($message, self::QUEUE_NAME);
     }
 
     private function registerCpListeners(EventManager $manager)
