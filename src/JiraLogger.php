@@ -6,6 +6,10 @@ use EventManager\EventManager;
 use Swarrot\Broker\Message;
 use Swarrot\Broker\MessageProvider\PeclPackageMessageProvider;
 use Swarrot\Broker\MessagePublisher\PhpAmqpLibMessagePublisher;
+use PhpAmqpLib\Connection\AMQPConnection;
+use PhpAmqpLib\Channel\AMQPChannel;
+
+
 
 
 /**
@@ -41,19 +45,12 @@ class JiraLogger
     {
         $this->queueConfig = $queueConfig;
 
-//        $queueConfig = CS\Settings\GlobalSettings::getQueueConfig();
-
         // Create connection
-        $connection = new \AMQPConnection($this->queueConfig);
-        $queueChannel = new \AMQPChannel($connection);
-
-        // Get the queue to consume
-        $queue = new \AMQPQueue($queueChannel);
-        $queue->setName(self::QUEUE_NAME);
+        $connection = new AMQPConnection($this->queueConfig['host'], $this->queueConfig['port'], $this->queueConfig['user'], $this->queueConfig['password']);
+        $queueChannel = new AMQPChannel($connection);
+        $connection->channel();
 
         return $queueChannel;
-//        $connection = new PhpAmqpLib\Connection\AMQPConnection($this->queueConfig['host'], $this->queueConfig['port'], $this->queueConfig['user'], $this->queueConfig['password']);
-//        $queueChannel = $connection->channel();
 
     }
 
