@@ -16,11 +16,12 @@ use PDO,
  *
  * @author root
  */
-class UsersManager {
+
+class UsersManager
+{
 
     /**
      * Database connection
-     * 
      * @var PDO
      */
     protected $db;
@@ -45,11 +46,11 @@ class UsersManager {
      */
     private static $listenersRegistered = false;
 
-    public function __construct(\PDO $db)
+    public function __construct(\PDO $db, $queue)
     {
         $this->db = $db;
 
-        self::registerListeners($db);
+        self::registerListeners($db, $queue);
     }
 
     /**

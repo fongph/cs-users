@@ -34,7 +34,6 @@ class JiraLogger
     {
         $this->pdo = $pdo;
         $this->queueConfig = $queueConfig;
-
     }
 
     public function setPdo(\PDO $pdo)

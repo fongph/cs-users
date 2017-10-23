@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e164a0738ef86f7c39eff7601f263ce7",
-    "content-hash": "831c6eb82b0aead21e0a076de9157c6b",
+    "hash": "25182e74e2a8cde04a17240f634efa5a",
+    "content-hash": "423eee810a0a05f7e8e8b9ff63e0ad82",
     "packages": [
         {
             "name": "boomers/cs-mail",
@@ -54,6 +54,25 @@
                 }
             },
             "time": "2017-05-18 09:37:40"
+        },
+        {
+            "name": "boomers/cs-settings",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@gitlab.dizboard.com:pumpic/cs-settings.git",
+                "reference": "8b0f5f5be3bc0adfae82b15972b5daa9cd263a0d"
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "CS\\Settings\\": "src/"
+                }
+            },
+            "time": "2017-09-08 09:14:33"
         },
         {
             "name": "boomers/ip",
@@ -1787,6 +1806,7 @@
         "boomers/ip": 20,
         "boomers/cs-models": 20,
         "boomers/cs-mail": 20,
+        "boomers/cs-settings": 20,
         "boomers/jira-client": 20
     },
     "prefer-stable": false,
