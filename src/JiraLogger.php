@@ -3,6 +3,7 @@
 namespace CS\Users;
 
 use EventManager\EventManager;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Swarrot\Broker\Message;
 use Swarrot\Broker\MessageProvider\PeclPackageMessageProvider;
 use Swarrot\Broker\MessagePublisher\PhpAmqpLibMessagePublisher;
@@ -46,12 +47,11 @@ class JiraLogger
         $this->queueConfig = $queueConfig;
 
         // Create connection
-        $connection = new AMQPConnection($this->queueConfig['host'], $this->queueConfig['port'], $this->queueConfig['user'], $this->queueConfig['password']);
+        $connection = new AMQPStreamConnection($this->queueConfig['host'], $this->queueConfig['port'], $this->queueConfig['user'], $this->queueConfig['password']);
         $queueChannel = new AMQPChannel($connection);
         $connection->channel();
 
         return $queueChannel;
-
     }
 
     public function registerListeners()
