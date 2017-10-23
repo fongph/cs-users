@@ -46,11 +46,11 @@ class UsersManager
      */
     private static $listenersRegistered = false;
 
-    public function __construct(\PDO $db, $queue)
+    public function __construct(\PDO $db)
     {
         $this->db = $db;
 
-        self::registerListeners($db, $queue);
+        self::registerListeners($db, \CS\Settings\GlobalSettings::getQueueConfig());
     }
 
     /**
