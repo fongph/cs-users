@@ -155,57 +155,57 @@ class JiraLogger
 
     private function registerCpListeners(EventManager $manager)
     {
-        $manager->on('cp-support-completed', function($data) {
+        $manager->on('cp-support-completed', function ($data) {
             $this->logEvent($data, 'cp-support-completed');
         });
         
-        $manager->on('cp-license-cancelation-completed', function($data) {
+        $manager->on('cp-license-cancelation-completed', function ($data) {
             $this->logEvent($data, 'cp-license-cancelation-completed');
         });
         
-        $manager->on('cp-lost-password-completed', function($data) {
+        $manager->on('cp-lost-password-completed', function ($data) {
             $this->logEventWithEmail($data, 'cp-lost-password-completed');
         });
     }
     
     private function registerApiListeners(EventManager $manager)
     {
-        $manager->on('device-application-deleted', function($data) {
+        $manager->on('device-application-deleted', function ($data) {
             $this->logEvent($data, 'device-application-deleted');
         });
         
-        $manager->on('device-admin-rights-removed', function($data) {
+        $manager->on('device-admin-rights-removed', function ($data) {
             $this->logEvent($data, 'device-admin-rights-removed');
         });
     }
 
     private function registerBillingListeners(EventManager $manager)
     {
-        $manager->on('billing-sale', function($data) {
+        $manager->on('billing-sale', function ($data) {
             $this->logEvent($data, 'billing-sale');
         });
 
-        $manager->on('billing-rebill', function($data) {
+        $manager->on('billing-rebill', function ($data) {
             $this->logEvent($data, 'billing-rebill');
         });
 
-        $manager->on('billing-refund', function($data) {
+        $manager->on('billing-refund', function ($data) {
             $this->logEvent($data, 'billing-refund');
         });
 
-        $manager->on('billing-fraud', function($data) {
+        $manager->on('billing-fraud', function ($data) {
             $this->logEvent($data, 'billing-fraud');
         });
 
-        $manager->on('billing-rebill-failed', function($data) {
+        $manager->on('billing-rebill-failed', function ($data) {
             $this->logEvent($data, 'billing-rebill-failed');
         });
 
-        $manager->on('billing-license-added', function($data) {
+        $manager->on('billing-license-added', function ($data) {
             $this->logEvent($data, 'billing-license-added');
         });
 
-        $manager->on('billing-order-started', function($data) {
+        $manager->on('billing-order-started', function ($data) {
             if (isset($data['userId']) && $data['userId'] > 0) {
                 $this->logEvent($data, 'billing-order-started');
             } else {
@@ -213,11 +213,11 @@ class JiraLogger
             }
         });
 
-        $manager->on('billing-order-completed', function($data) {
+        $manager->on('billing-order-completed', function ($data) {
             $this->logEvent($data, 'billing-order-completed');
         });
 
-        $manager->on('billing-order-canceled', function($data) {
+        $manager->on('billing-order-canceled', function ($data) {
             if (isset($data['userId'])) {
                 $this->logEvent($data, 'billing-order-canceled');
             } else {
@@ -225,47 +225,47 @@ class JiraLogger
             }
         });
         
-        $manager->on('billing-autorebill-enabled', function($data) {
+        $manager->on('billing-autorebill-enabled', function ($data) {
             $this->logEvent($data, 'billing-autorebill-enabled');
         });
         
-        $manager->on('billing-autorebill-disabled', function($data) {
+        $manager->on('billing-autorebill-disabled', function ($data) {
             $this->logEvent($data, 'billing-autorebill-disabled');
         });
 
-        $manager->on('billing-order-ga-source', function($data) {
+        $manager->on('billing-order-ga-source', function ($data) {
             $this->logEventWithEmail($data, 'billing-order-ga-source');
         });
         
-        $manager->on('license-added', function($data) {
+        $manager->on('license-added', function ($data) {
             $this->logEvent($data, 'license-added');
         });
         
-        $manager->on('license-dropped', function($data) {
+        $manager->on('license-dropped', function ($data) {
             $this->logEvent($data, 'license-dropped');
         });
         
-        $manager->on('license-assigned', function($data) {
+        $manager->on('license-assigned', function ($data) {
             $this->logEvent($data, 'license-assigned');
         });
         
-        $manager->on('license-unassigned', function($data) {
+        $manager->on('license-unassigned', function ($data) {
             $this->logEvent($data, 'license-unassigned');
         });
         
-        $manager->on('license-restored', function($data) {
+        $manager->on('license-restored', function ($data) {
             $this->logEvent($data, 'license-restored');
         });
         
-        $manager->on('license-expired', function($data) {
+        $manager->on('license-expired', function ($data) {
             $this->logEvent($data, 'license-expired');
         });
         
-        $manager->on('license-updated', function($data) {
+        $manager->on('license-updated', function ($data) {
             $this->logEvent($data, 'license-updated');
         });
 
-        $manager->on('license-migrated', function($data) {
+        $manager->on('license-migrated', function ($data) {
             $this->logEvent($data, 'license-migrated');
         });
     }
@@ -273,39 +273,39 @@ class JiraLogger
     private function registerFrontListeners(EventManager $manager)
     {
         // Tickets creation
-        $manager->on('front-order-pending', function($data) {//
+        $manager->on('front-order-pending', function ($data) {
             $this->logEvent($data, 'front-order-pending');
         });
 
-        $manager->on('front-registration-completed', function($data) {
+        $manager->on('front-registration-completed', function ($data) {
             $this->logEventWithEmail($data, 'front-registration-completed');
         });
 
-        $manager->on('front-subscription-completed', function($data) {
+        $manager->on('front-subscription-completed', function ($data) {
             $this->logEventWithEmail($data, 'front-subscription-completed');
         });
 
-        $manager->on('front-contact-us-completed', function($data) {//
+        $manager->on('front-contact-us-completed', function ($data) {
             $this->logEventWithEmail($data, 'front-contact-us-completed');
         });
 
-        $manager->on('front-compatibility-completed', function($data) {//
+        $manager->on('front-compatibility-completed', function ($data) {
             $this->logEventWithEmail($data, 'front-compatibility-completed');
         });
 
-        $manager->on('front-carriers-completed', function($data) {//
+        $manager->on('front-carriers-completed', function ($data) {
             $this->logEventWithEmail($data, 'front-carriers-completed');
         });
 
-        $manager->on('front-registration-trial-completed', function($data) {
+        $manager->on('front-registration-trial-completed', function ($data) {
             $this->logEvent($data, 'front-registration-trial-completed');
         });
         
-        $manager->on('front-livechat', function($data) {
+        $manager->on('front-livechat', function ($data) {
             $this->logEventWithEmail($data, 'front-livechat');
         });
 
-        $manager->on('front-employee-request-completed', function($data) {
+        $manager->on('front-employee-request-completed', function ($data) {
             $this->logEventWithEmail($data, 'front-employee-request-completed');
         });
     }
