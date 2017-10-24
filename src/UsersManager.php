@@ -50,7 +50,7 @@ class UsersManager
     {
         $this->db = $db;
 
-        self::registerListeners($db, \CS\Settings\GlobalSettings::getQueueConfig());
+        self::registerListeners($db);
     }
 
     /**
@@ -712,7 +712,7 @@ class UsersManager
         return $user;
     }
 
-    public static function registerListeners(PDO $pdo, $queue = null)
+    public static function registerListeners(PDO $pdo)
     {
         if (self::$listenersRegistered) {
             return;
@@ -726,7 +726,7 @@ class UsersManager
 //            }
 //        });
 
-        $jiraLogger = new JiraLogger($pdo, $queue);
+        $jiraLogger = new JiraLogger($pdo);
         $jiraLogger->registerListeners();
 
         self::$listenersRegistered = true;
