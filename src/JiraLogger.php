@@ -27,13 +27,11 @@ class JiraLogger
      * @var \PDO
      */
     private $pdo;
-    private $queueConfig;
 
 
-    public function __construct(\PDO $pdo, $queueConfig)
+    public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->queueConfig = $queueConfig;
     }
 
     public function setPdo(\PDO $pdo)
@@ -41,12 +39,11 @@ class JiraLogger
         $this->pdo = $pdo;
     }
 
-    public function setQueue($queueConfig)
+    public function setQueue()
     {
-        $this->queueConfig = $queueConfig;
-
+        $queueConfig = \CS\Settings\GlobalSettings::getQueueConfig();
         // Create connection
-        $connection = new AMQPStreamConnection($this->queueConfig['host'], $this->queueConfig['port'], $this->queueConfig['user'], $this->queueConfig['password']);
+        $connection = new AMQPStreamConnection($queueConfig['host'], $queueConfig['port'], $queueConfig['user'], $queueConfig['password']);
         $queueChannel = new AMQPChannel($connection);
         $connection->channel();
 
@@ -124,7 +121,7 @@ class JiraLogger
 
         $this->pdo->exec("INSERT INTO `jira_logs` SET `user_id` = {$userId}, `event` = {$eventName}, `data` = {$serializedData}");
 
-        $queueChannel = $this->setQueue($this->queueConfig);
+        $queueChannel = $this->setQueue();
 
         $publisher = new PhpAmqpLibMessagePublisher($queueChannel, '');
 
@@ -145,7 +142,7 @@ class JiraLogger
 
         $this->pdo->exec("INSERT INTO `jira_logs` SET `email` = {$email}, `event` = {$eventName}, `data` = {$serializedData}");
 
-        $queueChannel = $this->setQueue($this->queueConfig);
+        $queueChannel = $this->setQueue();
         $publisher = new PhpAmqpLibMessagePublisher($queueChannel, '');
 
         $message = new Message(json_encode(array_merge(array('event' => $event), $data)));
